@@ -53,6 +53,7 @@ public class Main extends JavaPlugin {
 
     /* Variables */
     private String prefix;
+    //Not used
     private String noPermission;
     private boolean bungeecord;
     private String lobbyServer;
@@ -162,13 +163,13 @@ public class Main extends JavaPlugin {
         /* Check if WorldEdit is Null */
         if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
             Bukkit.getPluginManager().disablePlugin(this);
-            getLogger().log(Level.SEVERE, "Please install WorldEdit Help");
+            getLogger().log(Level.SEVERE, "Please install WorldEdit!");
         }
 
         /* Check if WorldGuard is Null */
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") == null) {
             Bukkit.getPluginManager().disablePlugin(this);
-            getLogger().log(Level.SEVERE, "Please install WorldGuard");
+            getLogger().log(Level.SEVERE, "Please install WorldGuard!");
         }
 
         /* Setup Vault */

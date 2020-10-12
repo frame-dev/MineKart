@@ -3,9 +3,13 @@ package de.framedev.minekart.api;
 import de.framedev.minekart.listeners.PlayerMoveEffects;
 import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.PlayerStats;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.HashMap;
 
 /*
  * ===================================================
@@ -73,4 +77,8 @@ public class MineKartAPI {
         return false;
     }
      */
+
+    public HashMap<Player, Location> getPlayersCheckPoint() {
+        return PlayerMoveEffects.checkPoints;
+    }
 }
