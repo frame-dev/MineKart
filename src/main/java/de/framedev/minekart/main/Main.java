@@ -162,7 +162,7 @@ public class Main extends JavaPlugin {
         /* Check if WorldEdit is Null */
         if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
             Bukkit.getPluginManager().disablePlugin(this);
-            getLogger().log(Level.SEVERE, "Please install WorldEdit");
+            getLogger().log(Level.SEVERE, "Please install WorldEdit Help");
         }
 
         /* Check if WorldGuard is Null */
