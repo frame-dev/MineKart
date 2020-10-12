@@ -1,0 +1,16 @@
+name: MineKart
+version: ${project.version}
+main: de.framedev.minekart.main.Main
+api-version: 1.13
+authors: [FramePlays]
+depend: [WorldEdit, WorldGuard]
+
+commands:
+  minekart:
+    aliases:
+      - mk
+      - minek
+  playerstats:
+    aliases:
+      - plstats
+      - pstats

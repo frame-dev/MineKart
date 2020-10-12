@@ -1,0 +1,31 @@
+Prefix: '[&aMine&bKart&6] &c» &f'
+
+# MySQL Saves Table Default is minekart_playerstats [need MySQLAPI]
+DatabaseName: 'minekart_playerstats'
+
+# Default is false
+BungeeCord: false
+
+# CloudNet: false
+
+# CloudNetLobbyGroup: Lobby
+
+# Default is lobby
+LobbyServer: lobby
+
+# Would you use MySQL? Default is false [need MySQLAPI] https://github.com/TrAxMC/MySQLAPI/releases/tag/1.0.2
+MySQL: false
+
+# Default ist 100
+Win: 100
+
+# ItemBox Default is GOLD_BLOCK
+ItemBlock: GOLD_BLOCK
+
+# Start / Finish Block Default is YELLOW_TERRACOTTA
+StartBlock: YELLOW_TERRACOTTA
+
+# Language (de or en) Default is de
+lang: de
+
+# Max Rounds are 3
