@@ -1,0 +1,3 @@
+WinMessage: '&aPlayer &6%player% &ahas won the Game!'
+DetectFinish: '&aPlayer &6%player% &ahas end the Game!'
+Rounding: '&aPlayer &6%player% &ahas &6%round% &aentered!'
