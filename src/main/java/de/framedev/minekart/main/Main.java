@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import de.framedev.minekart.api.MineKartAPI;
 import de.framedev.minekart.commands.CreateGameCMD;
 import de.framedev.minekart.commands.PlayerStatsCMD;
 import de.framedev.minekart.listeners.*;
@@ -61,9 +62,9 @@ public class Main extends JavaPlugin {
     private String lobbyGroup;
 
     /* Lists */
-    private ArrayList<Listener> listeners;
     private HashMap<Game, Cuboid> cuboids;
     private ArrayList<SpecialItem> specialItems;
+    private ArrayList<Listener> listeners;
     private HashMap<String, CommandExecutor> commands;
     private HashMap<String, TabCompleter> tabCompleters;
 
@@ -184,7 +185,9 @@ public class Main extends JavaPlugin {
 
         if(isBungeecord() || isCloudNet()) {
             this.lobbyServer = getConfig().getString("LobbyServer");
-            this.lobbyGroup = getConfig().getString("CloudNetLobbyGroup");
+            if(getConfig().contains("CloudNetLobbyGroup")) {
+                this.lobbyGroup = getConfig().getString("CloudNetLobbyGroup");
+            }
         }
 
         getLogger().log(Level.WARNING, "This Plugin is Work in Progress");

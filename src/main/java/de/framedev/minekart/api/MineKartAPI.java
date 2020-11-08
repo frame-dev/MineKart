@@ -53,6 +53,10 @@ public class MineKartAPI {
         return plugin.getLobbyManager().getLobbies().get(0).getPlayers().contains(player);
     }
 
+    public int getPlaceFromPlayer(Player player) {
+        return plugin.getScoreBoardManager().getPlace(player);
+    }
+
     public int getPlayerRounds(Player player) {
         if (isPlayerInGame(player)) {
             return PlayerMoveEffects.getPlayerRounds().get(player);
@@ -69,6 +73,7 @@ public class MineKartAPI {
         }
         return 0;
     }
+
     /*
     public boolean registerNewSpecialItem(SpecialItem specialItem) {
         if(!plugin.getSpecialItems().contains(specialItem)) {

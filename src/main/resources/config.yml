@@ -1,4 +1,4 @@
-Prefix: '[&aMine&bKart&6] &c» &f'
+Prefix: '[&aMine&bKart&6] &c>> &f'
 
 # MySQL Saves Table Default is minekart_playerstats [need MySQLAPI]
 DatabaseName: 'minekart_playerstats'
@@ -6,8 +6,8 @@ DatabaseName: 'minekart_playerstats'
 # Default is false
 BungeeCord: false
 
+# ==CloudNet Disabled!==
 # CloudNet: false
-
 # CloudNetLobbyGroup: Lobby
 
 # Default is lobby

@@ -89,7 +89,7 @@ public class GameManager implements Serializable {
         if (Main.getInstance().getGameManagerConfig().getList("Game." + game.getCupName() + ".Maps") != null) {
             return (ArrayList<String>) Main.getInstance().getGameManagerConfig().getList("Game." + game.getCupName() + ".Maps");
         }
-        throw new NullPointerException("Es konnten keine Maps gefunden werden!");
+        throw new NullPointerException("Es konnte keine Maps gefunden werden!");
     }
 
     public boolean setPigSpawnLocation(Game game, Location location, int number) {
@@ -150,6 +150,7 @@ public class GameManager implements Serializable {
                     if (location != null) {
                         Minecart entity = (Minecart) game.getActiveWorld().spawnEntity(location, EntityType.MINECART);
                         for (Player player : game.getPlayers()) {
+                            game.saveOldItems(player);
                             game.getPigs().put(player, entity);
                             player.teleport(location);
                             Location spawn = location.add(0, 2, 0);

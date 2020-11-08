@@ -238,13 +238,12 @@ public class PlayerMoveEffects implements Listener {
                                                 if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
                                                     finishedPlayers.forEach(players -> {
                                                         if (plugin.isBungeecord() || plugin.isCloudNet()) {
+                                                            plugin.getGameManager().getGames().get(0).loadOldItems(players);
                                                             new ServerSwitcher().connect(players, plugin.getLobbyServer());
                                                         } else {
                                                             Location location = new LocationsManager(plugin.getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation();
                                                             players.teleport(location);
-                                                            ItemStack[] items = plugin.getGameManager().getGames().get(0).getOldItems().get(player);
-                                                            plugin.getGameManager().getGames().get(0).getOldItems().remove(player);
-                                                            player.getInventory().setContents(items);
+                                                            plugin.getGameManager().getGames().get(0).loadOldItems(players);
                                                         }
                                                     });
                                                     finishedPlayers.clear();

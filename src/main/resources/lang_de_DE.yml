@@ -1,4 +1,4 @@
 WinMessage: '&aSpieler &6%player% &ahat das Spiel gewonnen!'
 DetectFinish: '&aSpieler &6%player% &ahat das &6Ziel &aerreicht!'
 Rounding: '&aSpieler &6%player% &ahat Runde &6%round% &aerreicht!'
-NoPermissions: '&cKeinePermissions'
+NoPermissions: '&cKeine Permissions'

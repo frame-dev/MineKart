@@ -21,16 +21,16 @@ public class Game implements Serializable {
     private final HashMap<Player, Minecart> pigs;
 
     private final GameManager gameManager;
-
     private final ArrayList<World> finishedWorlds;
-
     private final HashMap<Player, Integer> playerRounds;
-
     private final HashMap<Player, ItemStack[]> oldItems;
 
     /*get Active World */
     private World activeWorld;
+
     private final Lobby lobby;
+
+    private String cupName;
 
     public Game() {
         this.oldItems = new HashMap<>();
@@ -42,6 +42,22 @@ public class Game implements Serializable {
         gameManager = Main.getInstance().getGameManager();
         gameManager.getGames().add(this);
 
+    }
+    
+    public void saveOldItems(Player player) {
+        oldItems.put(player,player.getInventory().getContents());
+        player.getInventory().clear();
+    }
+
+    public void loadOldItems(Player player) {
+        if(!oldItems.isEmpty()) {
+            if(oldItems.containsKey(player)) {
+                player.getInventory().clear();
+                ItemStack[] content = oldItems.get(player);
+                player.getInventory().setContents(content);
+                oldItems.remove(player);
+            }
+        }
     }
 
     public HashMap<Player, ItemStack[]> getOldItems() {
@@ -79,8 +95,6 @@ public class Game implements Serializable {
     public Game getGame() {
         return this;
     }
-
-    private String cupName;
 
     public boolean createGame(String cupName) {
         if (!Main.getInstance().getGameManagerConfig().contains("Game." + cupName)) {

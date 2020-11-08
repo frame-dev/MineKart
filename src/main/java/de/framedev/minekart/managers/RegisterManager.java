@@ -62,12 +62,19 @@ public class RegisterManager {
     }
 
     private void registerSpecialItems() {
+        // Mushroom
         SpecialItem speedMushroom = new SpecialItem(Material.RED_MUSHROOM).setDisplayName("§aSpeeeeed!");
         specialItems.addSpecialItem(speedMushroom);
+        // Lighting
         SpecialItem blitz = new SpecialItem(Material.BLAZE_ROD).setDisplayName("§aBliz!");
         specialItems.addSpecialItem(blitz);
 
+        // Start
         specialItems.addSpecialItem(specialItems.createSpecialItem(Material.NETHER_STAR, "§aStern!"));
+        // Banana
         specialItems.addSpecialItem(specialItems.createSpecialItem(Material.YELLOW_DYE,"§aBanana"));
+        // Bombe
+        specialItems.addSpecialItem(specialItems.createSpecialItem(Material.TNT,"§aIch Bumms dich weg!"));
+        // Bullet Bill
     }
 }
