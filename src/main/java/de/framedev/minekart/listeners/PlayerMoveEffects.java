@@ -230,57 +230,60 @@ public class PlayerMoveEffects implements Listener {
                                             zielErreicht = zielErreicht.replace("%player%", player.getName());
                                             plugin.getGameManager().getGames().get(0).sendMessageToGame(zielErreicht);
                                             isFinish.put(player, true);
-                                            player.getVehicle().removePassenger(player);
-                                            ((Pig) player.getVehicle()).setSaddle(false);
-                                            ((Pig) player.getVehicle()).setHealth(0);
-                                            player.setGameMode(GameMode.SPECTATOR);
-                                            if (finishedPlayers.size() == plugin.getGameManager().getGames().get(0).getPlayers().size()) {
-                                                if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
-                                                    finishedPlayers.forEach(players -> {
-                                                        if (plugin.isBungeecord() || plugin.isCloudNet()) {
-                                                            plugin.getGameManager().getGames().get(0).loadOldItems(players);
-                                                            new ServerSwitcher().connect(players, plugin.getLobbyServer());
-                                                        } else {
-                                                            Location location = new LocationsManager(plugin.getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation();
-                                                            players.teleport(location);
-                                                            plugin.getGameManager().getGames().get(0).loadOldItems(players);
-                                                        }
-                                                    });
-                                                    finishedPlayers.clear();
-                                                    plugin.getGameManager().getGames().get(0).getGameLobby().getPlayers().clear();
-                                                    plugin.getGameManager().getGames().get(0).getPlayers().clear();
-                                                } else {
-                                                    game.getFinishedWorlds().add(player.getWorld());
-                                                    ArrayList<String> nextMapsWorlds = new ArrayList<>();
-                                                    for (String world : plugin.getGameManager().getMaps(game)) {
-                                                        if (Bukkit.getWorld(world) != null) {
-                                                            if (!world.equalsIgnoreCase(player.getWorld().getName())) {
-                                                                if (!game.getFinishedWorlds().contains(Bukkit.getWorld(world))) {
-                                                                    nextMapsWorlds.add(world);
+                                            if (player.getVehicle() != null) {
+                                                player.getVehicle().removePassenger(player);
+                                                if(plugin.getGameManager().getSpectatorLocation(plugin.getGameManager().getGames().get(0),player.getWorld()) != null) {
+                                                    player.teleport(plugin.getGameManager().getSpectatorLocation(plugin.getGameManager().getGames().get(0),player.getWorld()));
+                                                }
+                                                player.setGameMode(GameMode.SPECTATOR);
+                                                if (finishedPlayers.size() == plugin.getGameManager().getGames().get(0).getPlayers().size()) {
+                                                    if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
+                                                        finishedPlayers.forEach(players -> {
+                                                            if (plugin.isBungeecord() || plugin.isCloudNet()) {
+                                                                plugin.getGameManager().getGames().get(0).loadOldItems(players);
+                                                                new ServerSwitcher().connect(players, plugin.getLobbyServer());
+                                                            } else {
+                                                                Location location = new LocationsManager(plugin.getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation();
+                                                                players.teleport(location);
+                                                                plugin.getGameManager().getGames().get(0).loadOldItems(players);
+                                                            }
+                                                        });
+                                                        finishedPlayers.clear();
+                                                        plugin.getGameManager().getGames().get(0).getGameLobby().getPlayers().clear();
+                                                        plugin.getGameManager().getGames().get(0).getPlayers().clear();
+                                                    } else {
+                                                        game.getFinishedWorlds().add(player.getWorld());
+                                                        ArrayList<String> nextMapsWorlds = new ArrayList<>();
+                                                        for (String world : plugin.getGameManager().getMaps(game)) {
+                                                            if (Bukkit.getWorld(world) != null) {
+                                                                if (!world.equalsIgnoreCase(player.getWorld().getName())) {
+                                                                    if (!game.getFinishedWorlds().contains(Bukkit.getWorld(world))) {
+                                                                        nextMapsWorlds.add(world);
+                                                                    }
                                                                 }
                                                             }
                                                         }
+                                                        game.setActiveWorld(plugin.getGameManager().pickRandomMap(game, nextMapsWorlds));
+                                                        plugin.getGameManager().spawnPigs(game);
                                                     }
-                                                    game.setActiveWorld(plugin.getGameManager().pickRandomMap(game, nextMapsWorlds));
-                                                    plugin.getGameManager().spawnPigs(game);
                                                 }
-                                            }
-                                            if (time2 == 30) {
-                                                new BukkitRunnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        if (time2 <= 0) {
-                                                            time2 = 30;
-                                                            cancel();
-                                                            roundings.remove(player);
-                                                            roundings.put(player, false);
-                                                        } else {
-                                                            time2--;
+                                                if (time2 == 30) {
+                                                    new BukkitRunnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            if (time2 <= 0) {
+                                                                time2 = 30;
+                                                                cancel();
+                                                                roundings.remove(player);
+                                                                roundings.put(player, false);
+                                                            } else {
+                                                                time2--;
+                                                            }
                                                         }
-                                                    }
-                                                }.runTaskTimerAsynchronously(plugin, 0, 20);
+                                                    }.runTaskTimerAsynchronously(plugin, 0, 20);
+                                                }
+                                                plugin.getGameManager().setStarted(false);
                                             }
-                                            plugin.getGameManager().setStarted(false);
                                         }
                                     }
                                 }

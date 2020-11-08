@@ -118,7 +118,7 @@ public class GameManager implements Serializable {
                 throw new NullPointerException("Location is Null");
             } else {
                 FileConfiguration cfg = Main.getInstance().getGameManagerConfig().cfg;
-                if(cfg.contains("Game." + game.getCupName() + "." + worlds.getName() + ".Pig." + number + ".world")) {
+                if (cfg.contains("Game." + game.getCupName() + "." + worlds.getName() + ".Pig." + number + ".world")) {
                     World world = Bukkit.getWorld(cfg.getString("Game." + game.getCupName() + "." + worlds.getName() + ".Pig." + number + ".world"));
                     int x = cfg.getInt("Game." + game.getCupName() + "." + worlds.getName() + ".Pig." + number + ".x");
                     int y = cfg.getInt("Game." + game.getCupName() + "." + worlds.getName() + ".Pig." + number + ".y");
@@ -273,12 +273,12 @@ public class GameManager implements Serializable {
     }
 
     public boolean createCheckPoint(World world, Game game, Location location, int i) {
-        if(getMaps(game).contains(world.getName())) {
-            if(!Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world")) {
-                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints.world",world.getName() + "." + i);
-                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".x",location.getBlockX());
-                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".y",location.getBlockY());
-                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".z",location.getBlockZ());
+        if (getMaps(game).contains(world.getName())) {
+            if (!Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world")) {
+                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints.world", world.getName() + "." + i);
+                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".x", location.getBlockX());
+                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".y", location.getBlockY());
+                Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".z", location.getBlockZ());
                 Main.getInstance().getGameManagerConfig().saveConfig();
                 return true;
             }
@@ -288,13 +288,13 @@ public class GameManager implements Serializable {
 
     public List<Location> getCheckPoints(World world, Game game) {
         ArrayList<Location> locations = new ArrayList<>();
-        if(Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world")) {
-            if(Main.getInstance().getGameManagerConfig().getString("Game." + game.getCupName() + ".CheckPoints.world").equalsIgnoreCase(world.getName())) {
+        if (Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world")) {
+            if (Main.getInstance().getGameManagerConfig().getString("Game." + game.getCupName() + ".CheckPoints.world").equalsIgnoreCase(world.getName())) {
                 ConfigurationSection cs = Main.getInstance().getGameManagerConfig().getConfiguration().getConfigurationSection("Game." + game.getCupName() + ".CheckPoints.world." + world.getName());
-                if(cs != null) {
-                    for(String s : cs.getKeys(false)) {
-                        locations.add(new Location(world,Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".x"),
-                                Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".y"),Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".z")));
+                if (cs != null) {
+                    for (String s : cs.getKeys(false)) {
+                        locations.add(new Location(world, Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".x"),
+                                Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".y"), Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".z")));
                     }
                     return locations;
                 }
@@ -304,9 +304,29 @@ public class GameManager implements Serializable {
     }
 
     public boolean isPlayerInCheckPoint(Player player, Location checkpoint) {
-        if(player.getWorld().equals(checkpoint.getWorld())) {
+        if (player.getWorld().equals(checkpoint.getWorld())) {
             return player.getLocation().distance(checkpoint) <= 10;
         }
         return false;
+    }
+
+    public void setSpectatorLocation(Game game, Location location) {
+        FileConfiguration cfg = Main.getInstance().getGameManagerConfig().cfg;
+        if(location.getWorld() == null) return;
+        cfg.set("Game." + game.getCupName() + ".spectator." + location.getWorld().getName() + ".x", location.getX());
+        cfg.set("Game." + game.getCupName() + ".spectator." + location.getWorld().getName() + ".y", location.getY());
+        cfg.set("Game." + game.getCupName() + ".spectator." + location.getWorld().getName() + ".x", location.getZ());
+        Main.getInstance().getGameManagerConfig().saveConfig();
+    }
+
+    public Location getSpectatorLocation(Game game, World world) {
+        if (Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".spectator." + world.getName())) {
+            FileConfiguration cfg = Main.getInstance().getGameManagerConfig().cfg;
+            double x = cfg.getDouble("Game." + game.getCupName() + ".spectator." + world.getName() + ".x");
+            double y = cfg.getDouble("Game." + game.getCupName() + ".spectator." + world.getName() + ".y");
+            double z = cfg.getDouble("Game." + game.getCupName() + ".spectator." + world.getName() + ".z");
+            return new Location(world, x, y, z);
+        }
+        return null;
     }
 }
