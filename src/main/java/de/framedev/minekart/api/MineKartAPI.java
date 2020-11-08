@@ -64,6 +64,7 @@ public class MineKartAPI {
         }
         return 0;
     }
+
     public FileConfiguration getLanguageConfigByPlayer(Player player) {
         return plugin.getLanguageByPlayerConfig(player);
     }
@@ -78,34 +79,36 @@ public class MineKartAPI {
     public boolean disableSpecialItem(String itemName) {
         for (SpecialItem specialItem : plugin.getSpecialItemsManager().getSpecialitems()) {
             if (specialItem.getDisplayName().equalsIgnoreCase(itemName)) {
-                plugin.getSpecialItemsManager().removeSpecialItem(specialItem);
-                switch (itemName) {
-                    case "§aSpeeeeed!":
-                        plugin.getConfig().set("SpecialItems.Mushroom", false);
-                        plugin.saveConfig();
-                        break;
-                    case "§aBlitz!":
-                        plugin.getConfig().set("SpecialItems.Thunder", false);
-                        plugin.saveConfig();
-                        break;
-                    case "§aStern!":
-                        plugin.getConfig().set("SpecialItems.Star", false);
-                        plugin.saveConfig();
-                        break;
-                    case "§aBanana":
-                        plugin.getConfig().set("SpecialItems.Banana", false);
-                        plugin.saveConfig();
-                        break;
-                    case "§aBombe!":
-                        plugin.getConfig().set("SpecialItems.Bomb", false);
-                        plugin.saveConfig();
-                        break;
+                if(plugin.getSpecialItemsManager().removeSpecialItem(specialItem)) {
+                    switch (itemName) {
+                        case "§aSpeeeeed!":
+                            plugin.getConfig().set("SpecialItems.Mushroom", false);
+                            plugin.saveConfig();
+                            break;
+                        case "§aBlitz!":
+                            plugin.getConfig().set("SpecialItems.Thunder", false);
+                            plugin.saveConfig();
+                            break;
+                        case "§aStern!":
+                            plugin.getConfig().set("SpecialItems.Star", false);
+                            plugin.saveConfig();
+                            break;
+                        case "§aBanana":
+                            plugin.getConfig().set("SpecialItems.Banana", false);
+                            plugin.saveConfig();
+                            break;
+                        case "§aBombe!":
+                            plugin.getConfig().set("SpecialItems.Bomb", false);
+                            plugin.saveConfig();
+                            break;
+                    }
+                    return true;
                 }
-                return true;
             }
         }
         return false;
     }
+
     public HashMap<Player, Location> getPlayersCheckPoint() {
         return PlayerMoveEffects.checkPoints;
     }
