@@ -2,7 +2,12 @@ package de.framedev.minekart.main;
 
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.FlagContext;
+import com.sk89q.worldguard.protection.flags.FlagUtil;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -420,6 +425,7 @@ public class Main extends JavaPlugin {
         RegionContainer container = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionManager regions = container.get(new BukkitWorld(location1.getWorld()));
         regions.addRegion(region);
+        regions.getRegion("__global__").setFlag(Flags.TNT, StateFlag.State.DENY);
         Main.getInstance().getCuboids().put(game, cuboid);
         new LocationsManager(game.getCupName() + "location1").setLocation(location1);
         new LocationsManager(game.getCupName() + "location2").setLocation(location2);

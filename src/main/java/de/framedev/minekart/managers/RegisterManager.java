@@ -28,12 +28,18 @@ public class RegisterManager {
 
         new GameJoin(plugin);
         new GameStartedListener(plugin);
+
         specialItems = plugin.getSpecialItemsManager();
+
         registerCommands(plugin);
         registerTabCompleters(plugin);
         registerListeners(plugin);
         registerSpecialItems();
         plugin.getLobbyManager().registerEvents();
+
+        for(SpecialItem specialItem : specialItems.getSpecialitems()) {
+            plugin.log("§6" + specialItem.getDisplayName() + " §awurde Regristriert§4§l!");
+        }
         Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + "§aCommands/TabCompleters/Listeners §bRegistered!");
     }
 
@@ -62,19 +68,20 @@ public class RegisterManager {
     }
 
     private void registerSpecialItems() {
-        // Mushroom
+        // Mushroom /
         SpecialItem speedMushroom = new SpecialItem(Material.RED_MUSHROOM).setDisplayName("§aSpeeeeed!");
         specialItems.addSpecialItem(speedMushroom);
-        // Lighting
-        SpecialItem blitz = new SpecialItem(Material.BLAZE_ROD).setDisplayName("§aBliz!");
+        // Lighting /
+        SpecialItem blitz = new SpecialItem(Material.BLAZE_ROD).setDisplayName("§aBlitz!");
         specialItems.addSpecialItem(blitz);
 
-        // Start
+        // Star /
         specialItems.addSpecialItem(specialItems.createSpecialItem(Material.NETHER_STAR, "§aStern!"));
-        // Banana
+        // Banana /
         specialItems.addSpecialItem(specialItems.createSpecialItem(Material.YELLOW_DYE,"§aBanana"));
         // Bombe
-        specialItems.addSpecialItem(specialItems.createSpecialItem(Material.TNT,"§aIch Bumms dich weg!"));
+        specialItems.addSpecialItem(specialItems.createSpecialItem(Material.TNT,"§aBombe!"));
+
         // Bullet Bill
     }
 }

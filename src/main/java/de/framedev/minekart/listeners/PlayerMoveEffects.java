@@ -211,6 +211,7 @@ public class PlayerMoveEffects implements Listener {
                                             playerRounds.remove(player);
                                             playerRounds.put(player, 0);
                                             finishedPlayers.add(player);
+                                            Player winner = null;
                                             if (finishedPlayers.size() == 0) {
                                                 plugin.getGameManager().getGames().get(0).getPlayers().forEach(players -> {
                                                     String winMessage = plugin.getLanguageByPlayerConfig(players).getString("WinMessage");
@@ -219,11 +220,12 @@ public class PlayerMoveEffects implements Listener {
                                                     players.sendTitle(winMessage, "");
                                                 });
                                                 plugin.getPlayerStats().addWin(player);
-                                                int win = plugin.getConfig().getInt("Win");
+                                                int win = plugin.getConfig().getInt("WinReward");
                                                 plugin.getApi().depositPlayer(player, win);
                                                 int wonMoney = plugin.getPlayerStats().getWinsAmount(player);
                                                 wonMoney = wonMoney + win;
                                                 plugin.getPlayerStats().setWinsAmount(player, wonMoney);
+                                                winner = player;
                                             }
                                             String zielErreicht = plugin.getLanguageByPlayerConfig(player).getString("DetectFinish");
                                             zielErreicht = zielErreicht.replace('&', '§');
@@ -238,7 +240,12 @@ public class PlayerMoveEffects implements Listener {
                                                 player.setGameMode(GameMode.SPECTATOR);
                                                 if (finishedPlayers.size() == plugin.getGameManager().getGames().get(0).getPlayers().size()) {
                                                     if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
+                                                        Player finalWinner = winner;
                                                         finishedPlayers.forEach(players -> {
+                                                            if(!finalWinner.equals(players)) {
+                                                                int trostPreis = plugin.getConfig().getInt("LoseReward");
+                                                                plugin.getApi().depositPlayer(players,trostPreis);
+                                                            }
                                                             if (plugin.isBungeecord() || plugin.isCloudNet()) {
                                                                 plugin.getGameManager().getGames().get(0).loadOldItems(players);
                                                                 new ServerSwitcher().connect(players, plugin.getLobbyServer());
