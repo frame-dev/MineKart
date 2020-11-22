@@ -28,6 +28,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -59,6 +62,8 @@ public class Main extends JavaPlugin {
 
     /* Variables */
     private String prefix;
+    private ItemStack[] lobbyInventory;
+
     //Not used
     private String noPermission;
     private boolean bungeecord;
@@ -83,6 +88,13 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         /* Instance */
         instance = this;
+
+        this.lobbyInventory = new ItemStack[3*9];
+        ItemStack leaveItem = new ItemStack(Material.BLUE_BED);
+        ItemMeta leaveMeta = leaveItem.getItemMeta();
+        leaveMeta.setDisplayName("§aLeave Game");
+        leaveItem.setItemMeta(leaveMeta);
+        this.lobbyInventory[0] = leaveItem;
 
         /* WorldGuard */
         this.worldGuardPlugin = getWorldGuard();
@@ -125,7 +137,7 @@ public class Main extends JavaPlugin {
         /* prefix */
         this.prefix = configuration.getString("Prefix");
         prefix = prefix.replace('&', '§');
-        prefix = prefix.replace(">>","»");
+        prefix = prefix.replace(">>", "»");
 
         /* Register */
         new RegisterManager(this);
@@ -161,10 +173,10 @@ public class Main extends JavaPlugin {
         }
 
         /* Check Languages */
-            this.langConfigDE = new CustomConfig("lang_de_DE");
-            this.langConfigEN = new CustomConfig("lang_en_EN");
-            this.langConfigDE.createConfig();
-            this.langConfigEN.createConfig();
+        this.langConfigDE = new CustomConfig("lang_de_DE");
+        this.langConfigEN = new CustomConfig("lang_en_EN");
+        this.langConfigDE.createConfig();
+        this.langConfigEN.createConfig();
 
         /* Check if WorldEdit is Null */
         if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
@@ -186,16 +198,21 @@ public class Main extends JavaPlugin {
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new ServerSwitcher());
 
         this.bungeecord = getConfig().getBoolean("BungeeCord");
-        this.cloudNet = getConfig().getBoolean("CloudNet");
+        //this.cloudNet = getConfig().getBoolean("CloudNet");
 
-        if(isBungeecord() || isCloudNet()) {
+        if (isBungeecord() || isCloudNet()) {
             this.lobbyServer = getConfig().getString("LobbyServer");
-            if(getConfig().contains("CloudNetLobbyGroup")) {
+            /*if(getConfig().contains("CloudNetLobbyGroup")) {
                 this.lobbyGroup = getConfig().getString("CloudNetLobbyGroup");
             }
+        */
         }
 
         getLogger().log(Level.WARNING, "This Plugin is Work in Progress");
+    }
+
+    public ItemStack[] getLobbyInventory() {
+        return lobbyInventory;
     }
 
     public boolean isCloudNet() {
@@ -257,8 +274,8 @@ public class Main extends JavaPlugin {
     }
 
     public FileConfiguration getLanguageByPlayerConfig(Player player) {
-        CraftPlayer entityPlayer = ((CraftPlayer)player);
-        if(entityPlayer.getLocale().equalsIgnoreCase("de_DE")) {
+        CraftPlayer entityPlayer = ((CraftPlayer) player);
+        if (entityPlayer.getLocale().equalsIgnoreCase("de_DE")) {
             return this.langConfigDE.getConfiguration();
         } else {
             return this.langConfigEN.getConfiguration();
@@ -411,10 +428,10 @@ public class Main extends JavaPlugin {
             if (block.getType() == Material.AIR) {
             } else {
                 Material material = Material.getMaterial(Objects.requireNonNull(Main.getInstance().getConfig().getString("StartBlock")));
-                if(material != null) {
+                if (material != null) {
                     block.setType(material);
                 } else {
-                    getLogger().log(Level.SEVERE,"Cannot found the Material in the Config.yml!");
+                    getLogger().log(Level.SEVERE, "Cannot found the Material in the Config.yml!");
                 }
             }
         }
@@ -435,6 +452,7 @@ public class Main extends JavaPlugin {
 
     /**
      * Diese Mthode wird verwenden von Debuggin von Objekten
+     *
      * @param obj das Object zu Debuggen
      */
     public void debug(Object obj) {
@@ -443,7 +461,6 @@ public class Main extends JavaPlugin {
     }
 
     /**
-     *
      * @param text Text to send
      */
     public void log(String text) {

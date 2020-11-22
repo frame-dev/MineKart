@@ -211,27 +211,21 @@ public class PlayerMoveEffects implements Listener {
                                             playerRounds.remove(player);
                                             playerRounds.put(player, 0);
                                             finishedPlayers.add(player);
-                                            Player winner = null;
-                                            if (finishedPlayers.size() == 0) {
-                                                plugin.getGameManager().getGames().get(0).getPlayers().forEach(players -> {
-                                                    String winMessage = plugin.getLanguageByPlayerConfig(players).getString("WinMessage");
-                                                    winMessage = winMessage.replace('&', '§');
-                                                    winMessage = winMessage.replace("%player%", player.getName());
-                                                    players.sendTitle(winMessage, "");
-                                                });
-                                                plugin.getPlayerStats().addWin(player);
-                                                int win = plugin.getConfig().getInt("WinReward");
-                                                plugin.getApi().depositPlayer(player, win);
-                                                int wonMoney = plugin.getPlayerStats().getWinsAmount(player);
-                                                wonMoney = wonMoney + win;
-                                                plugin.getPlayerStats().setWinsAmount(player, wonMoney);
-                                                winner = player;
-                                            }
                                             String zielErreicht = plugin.getLanguageByPlayerConfig(player).getString("DetectFinish");
                                             zielErreicht = zielErreicht.replace('&', '§');
                                             zielErreicht = zielErreicht.replace("%player%", player.getName());
                                             plugin.getGameManager().getGames().get(0).sendMessageToGame(zielErreicht);
                                             isFinish.put(player, true);
+                                            Player winner = null;
+                                            if (finishedPlayers.size() == 0) {
+                                                for (Player players : plugin.getGameManager().getGames().get(0).getPlayers()) {
+                                                    String winMessage = plugin.getLanguageByPlayerConfig(players).getString("WinMessage");
+                                                    winMessage = winMessage.replace('&', '§');
+                                                    winMessage = winMessage.replace("%player%", player.getName());
+                                                    players.sendTitle(winMessage, "");
+                                                    winner = players;
+                                                }
+                                            }
                                             if (player.getVehicle() != null) {
                                                 player.getVehicle().removePassenger(player);
                                                 if(plugin.getGameManager().getSpectatorLocation(plugin.getGameManager().getGames().get(0),player.getWorld()) != null) {
@@ -242,6 +236,12 @@ public class PlayerMoveEffects implements Listener {
                                                     if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
                                                         Player finalWinner = winner;
                                                         finishedPlayers.forEach(players -> {
+                                                                plugin.getPlayerStats().addWin(player);
+                                                                int win = plugin.getConfig().getInt("WinReward");
+                                                                plugin.getApi().depositPlayer(player, win);
+                                                                int wonMoney = plugin.getPlayerStats().getWinsAmount(player);
+                                                                wonMoney = wonMoney + win;
+                                                                plugin.getPlayerStats().setWinsAmount(player, wonMoney);
                                                             if(!finalWinner.equals(players)) {
                                                                 int trostPreis = plugin.getConfig().getInt("LoseReward");
                                                                 plugin.getApi().depositPlayer(players,trostPreis);
