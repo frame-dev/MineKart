@@ -1,14 +1,14 @@
 package de.framedev.minekart.managers;
 
 import de.framedev.minekart.main.Main;
-import net.minecraft.server.v1_14_R1.EntityArmorStand;
-import net.minecraft.server.v1_14_R1.IChatBaseComponent;
-import net.minecraft.server.v1_14_R1.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_14_R1.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R1.EntityArmorStand;
+import net.minecraft.server.v1_16_R1.IChatBaseComponent;
+import net.minecraft.server.v1_16_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_16_R1.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

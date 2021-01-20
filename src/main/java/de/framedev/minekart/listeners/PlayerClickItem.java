@@ -7,14 +7,11 @@ import de.framedev.minekart.managers.SpecialItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -23,7 +20,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
 import xyz.xenondevs.particle.ParticleEffect;
 
 import java.util.HashMap;
@@ -70,112 +66,101 @@ public class PlayerClickItem implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (plugin.getGameManager().getGames().isEmpty()) return;
-        if (plugin.getGameManager().getGames() == null) return;
-        if (plugin.getGameManager().getGamePlayers() == null) return;
-        if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
-            if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
-                if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    if (event.getItem() == null) return;
-                    ItemStack item = event.getItem();
-                    if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                        for (SpecialItem specialItem : plugin.getSpecialItems()) {
-                            if (specialItem == null) return;
-                            if (item.getType() == specialItem.getType() && item.getItemMeta().getDisplayName().equalsIgnoreCase(specialItem.getDisplayName())) {
-                                if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aSpeeeeed!")) {
-                                    if (gameManager.getGamePlayers().get(event.getPlayer()).getPigs() != null) {
-                                        Minecart pig = gameManager.getGamePlayers().get(event.getPlayer()).getPigs().get(event.getPlayer());
-                                        double speed = pig.getMaxSpeed();
-                                        pig.setMaxSpeed(200);
-                                        new BukkitRunnable() {
-                                            @Override
-                                            public void run() {
-                                                pig.setMaxSpeed(speed);
-                                            }
-                                        }.runTaskLater(Main.getInstance(), 200);
-                                        event.getPlayer().getItemInHand().setType(Material.AIR);
-                                        event.setCancelled(true);
-                                        event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
-                                    }
-                                } else if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aStern!")) {
-                                    if (gameManager.getGamePlayers().get(event.getPlayer()).getPigs() != null) {
-                                        Minecart pig = gameManager.getGamePlayers().get(event.getPlayer()).getPigs().get(event.getPlayer());
-                                        spawnParticle(player, ParticleEffect.SPELL_MOB);
-                                        particleActive1.put(player, player.getName());
-                                        pig.setInvulnerable(true);
-                                        player.setInvulnerable(true);
-                                        if (time.containsKey(player)) {
-                                            time.remove(player);
-                                            time.put(player, 15);
-                                        } else {
-                                            time.put(player, 15);
-                                        }
-                                        new BukkitRunnable() {
-                                            @Override
-                                            public void run() {
-                                                if (time.get(player) <= 0) {
-                                                    if (particleActive1.containsKey(player)) {
-                                                        taskIDs.get(player).cancel();
-                                                        taskIDs.remove(player);
-                                                        particleActive1.remove(player);
+        if (plugin.getGameManager().getGames() != null) {
+            if (plugin.getGameManager().getGamePlayers() != null) {
+                if (plugin.getGameManager().getGamePlayers().containsKey(event.getPlayer())) {
+                    if (plugin.getGameManager().getGamePlayers().get(event.getPlayer()).getPlayers().contains(event.getPlayer())) {
+                        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                            if (event.getItem() != null) {
+                                ItemStack item = event.getItem();
+                                if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                                    for (SpecialItem specialItem : plugin.getSpecialItems()) {
+                                        if (specialItem != null) {
+                                            if (item.getType() == specialItem.getType() && item.getItemMeta().getDisplayName().equalsIgnoreCase(specialItem.getDisplayName())) {
+                                                if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aSpeeeeed!")) {
+                                                    if (gameManager.getGamePlayers().get(event.getPlayer()).getPigs() != null) {
+                                                        Minecart pig = gameManager.getGamePlayers().get(event.getPlayer()).getPigs().get(event.getPlayer());
+                                                        double speed = pig.getMaxSpeed();
+                                                        pig.setMaxSpeed(200);
+                                                        new BukkitRunnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                pig.setMaxSpeed(speed);
+                                                            }
+                                                        }.runTaskLater(Main.getInstance(), 200);
+                                                        event.getPlayer().getItemInHand().setType(Material.AIR);
+                                                        event.setCancelled(true);
+                                                        event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
                                                     }
-                                                    pig.setInvulnerable(false);
-                                                    player.setInvulnerable(false);
-                                                    time.remove(player);
-                                                    cancel();
-                                                } else {
-                                                    int times = time.get(player);
-                                                    times--;
-                                                    time.remove(player);
-                                                    time.put(player, times);
-                                                }
-                                            }
-                                        }.runTaskTimer(plugin, 0, 20);
-                                        event.getPlayer().getItemInHand().setType(Material.AIR);
-                                        event.setCancelled(true);
-                                        event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
-                                    }
-                                } else if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aBlitz!")) {
-                                    if (plugin.getGameManager().getGames().get(0) != null) {
-                                        if (plugin.getGameManager().getGames().get(0).getPlayers() != null) {
-                                            plugin.getGameManager().getGames().get(0).getPlayers().forEach(players -> {
-                                                if (!players.getName().equalsIgnoreCase(player.getName())) {
-                                                    Minecart minecart = plugin.getGameManager().getGames().get(0).getPigs().get(players);
-                                                    double speed = minecart.getMaxSpeed();
-                                                    minecart.setMaxSpeed(speed - 4);
-                                                    new BukkitRunnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            minecart.setMaxSpeed(speed);
+                                                } else if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aStern!")) {
+                                                    if (gameManager.getGamePlayers().get(event.getPlayer()).getPigs() != null) {
+                                                        Minecart pig = gameManager.getGamePlayers().get(event.getPlayer()).getPigs().get(event.getPlayer());
+                                                        spawnParticle(player, ParticleEffect.SPELL_MOB);
+                                                        particleActive1.put(player, player.getName());
+                                                        pig.setInvulnerable(true);
+                                                        player.setInvulnerable(true);
+                                                        if (time.containsKey(player)) {
+                                                            time.remove(player);
+                                                            time.put(player, 15);
+                                                        } else {
+                                                            time.put(player, 15);
                                                         }
-                                                    }.runTaskLater(plugin, 20);
-                                                    players.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 10, 2, false));
+                                                        new BukkitRunnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                if (time.get(player) <= 0) {
+                                                                    if (particleActive1.containsKey(player)) {
+                                                                        taskIDs.get(player).cancel();
+                                                                        taskIDs.remove(player);
+                                                                        particleActive1.remove(player);
+                                                                    }
+                                                                    pig.setInvulnerable(false);
+                                                                    player.setInvulnerable(false);
+                                                                    time.remove(player);
+                                                                    cancel();
+                                                                } else {
+                                                                    int times = time.get(player);
+                                                                    times--;
+                                                                    time.remove(player);
+                                                                    time.put(player, times);
+                                                                }
+                                                            }
+                                                        }.runTaskTimer(plugin, 0, 20);
+                                                        event.getPlayer().getItemInHand().setType(Material.AIR);
+                                                        event.setCancelled(true);
+                                                        event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
+                                                    }
+                                                } else if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aBliz!")) {
+                                                    if (plugin.getGameManager().getGames().get(0) != null) {
+                                                        if (plugin.getGameManager().getGames().get(0).getPlayers() != null) {
+                                                            plugin.getGameManager().getGames().get(0).getPlayers().forEach(players -> {
+                                                                if (!players.getName().equalsIgnoreCase(player.getName())) {
+                                                                    Minecart minecart = plugin.getGameManager().getGames().get(0).getPigs().get(players);
+                                                                    double speed = minecart.getMaxSpeed();
+                                                                    minecart.setMaxSpeed(speed - 4);
+                                                                    new BukkitRunnable() {
+                                                                        @Override
+                                                                        public void run() {
+                                                                            minecart.setMaxSpeed(speed);
+                                                                        }
+                                                                    }.runTaskLater(plugin, 20);
+                                                                    players.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 10, 2, false));
+                                                                }
+                                                            });
+                                                            event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
+                                                        }
+                                                    }
+                                                } else if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aBanana")) {
+                                                    if (plugin.getGameManager().getGames().get(0) != null) {
+                                                        if (plugin.getGameManager().getGames().get(0).getPlayers() != null) {
+                                                            event.setCancelled(true);
+                                                            player.getInventory().remove(item);
+                                                            player.getWorld().dropItemNaturally(player.getLocation(), item);
+                                                            event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
+                                                        }
+                                                    }
                                                 }
-                                            });
-                                            event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
-                                        }
-                                    }
-                                } else if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aBanana")) {
-                                    if (plugin.getGameManager().getGames().get(0) != null) {
-                                        if (plugin.getGameManager().getGames().get(0).getPlayers() != null) {
-                                            event.setCancelled(true);
-                                            player.getInventory().remove(item);
-                                            player.getWorld().dropItemNaturally(player.getLocation(), item);
-                                            event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
-                                        }
-                                    }
-                                } else if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aBombe!")) {
-                                    if (plugin.getGameManager().getGames().get(0) != null) {
-                                        if (plugin.getGameManager().getGames().get(0).getPlayers() != null) {
-                                            event.setCancelled(true);
-                                            player.getInventory().remove(item);
-                                            if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-                                                Entity entity = player.getWorld().spawnEntity(player.getLocation(), EntityType.PRIMED_TNT);
-                                                entity.setVelocity(player.getVelocity().setY(6));
-                                            } else {
-                                                player.getWorld().spawnEntity(player.getLocation(), EntityType.PRIMED_TNT);
                                             }
-                                            event.getPlayer().sendMessage(plugin.getPrefix() + "§aItem wurde eingesetzt! §6:" + item.getItemMeta().getDisplayName());
                                         }
                                     }
                                 }
@@ -195,7 +180,7 @@ public class PlayerClickItem implements Listener {
                     location1 = event.getClickedBlock().getLocation();
                     if (!commands.get(event.getPlayer()).equalsIgnoreCase("finish")) {
                         commands.put(event.getPlayer(), "finish");
-                        event.getPlayer().sendMessage(plugin.getPrefix() + " §cWenn du fertig bist gib bitte" + " §6/finish ein§4§l!");
+                        event.getPlayer().sendMessage(plugin.getPrefix() + " §cWenn du fertig bist gib bitte" + " §6\"finish\" ein!");
                     }
                     event.setCancelled(true);
                 }
@@ -204,7 +189,7 @@ public class PlayerClickItem implements Listener {
                     location2 = event.getClickedBlock().getLocation();
                     if (!commands.get(event.getPlayer()).equalsIgnoreCase("finish")) {
                         commands.put(event.getPlayer(), "finish");
-                        event.getPlayer().sendMessage(plugin.getPrefix() + " §cWenn du fertig bist gib bitte" + " §6/finish ein§4§l!");
+                        event.getPlayer().sendMessage(plugin.getPrefix() + " §cWenn du fertig bist gib bitte" + " §6\"finish\" ein!");
                     }
                     event.setCancelled(true);
                 }
@@ -242,55 +227,30 @@ public class PlayerClickItem implements Listener {
     @EventHandler
     public void onPickUp(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
-        if (plugin.getGameManager().getGames().isEmpty()) return;
         if (plugin.getGameManager().getGames() != null) {
-            if (plugin.getGameManager().getGames().get(0).getPlayers().contains(player)) {
-                if (event.getItem() != null) {
-                    ItemStack item = event.getItem().getItemStack();
-                    if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                        for (SpecialItem specialItem : plugin.getSpecialItems()) {
-                            if (specialItem != null) {
-                                if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aBanana")) {
-                                    if (!player.getName().equalsIgnoreCase(player.getName())) {
-                                        Minecart minecart = plugin.getGameManager().getGames().get(0).getPigs().get(player);
-                                        double speed = minecart.getMaxSpeed();
-                                        minecart.setMaxSpeed(speed - 10);
-                                        new BukkitRunnable() {
-                                            @Override
-                                            public void run() {
-                                                minecart.setMaxSpeed(speed);
+            if (plugin.getGameManager().getGamePlayers() != null) {
+                if (plugin.getGameManager().getGamePlayers().containsKey(event.getPlayer())) {
+                    if (plugin.getGameManager().getGamePlayers().get(event.getPlayer()).getPlayers().contains(event.getPlayer())) {
+                        if (event.getItem() != null) {
+                            ItemStack item = event.getItem().getItemStack();
+                            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                                for (SpecialItem specialItem : plugin.getSpecialItems()) {
+                                    if (specialItem != null) {
+                                        if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§aBanana")) {
+                                            if (!player.getName().equalsIgnoreCase(player.getName())) {
+                                                Minecart minecart = plugin.getGameManager().getGames().get(0).getPigs().get(player);
+                                                double speed = minecart.getMaxSpeed();
+                                                minecart.setMaxSpeed(speed - 10);
+                                                new BukkitRunnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        minecart.setMaxSpeed(speed);
+                                                    }
+                                                }.runTaskLater(plugin, 20*10);
                                             }
-                                        }.runTaskLater(plugin, 20 * 10);
-                                        player.getInventory().remove(item);
+                                        }
                                     }
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onTntDamage(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            if (event.getDamager().getType() == EntityType.PRIMED_TNT) {
-                if (plugin.getGameManager().getGames().isEmpty()) return;
-                if (plugin.getGameManager().getGames() != null) {
-                    if (plugin.getGameManager().getGamePlayers() != null) {
-                        if (plugin.getGameManager().getGames().get(0).getPlayers().contains(player)) {
-                            if (!player.getName().equalsIgnoreCase(player.getName())) {
-                                Minecart minecart = plugin.getGameManager().getGames().get(0).getPigs().get(player);
-                                double speed = minecart.getMaxSpeed();
-                                minecart.setMaxSpeed(speed - 25);
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-                                        minecart.setMaxSpeed(speed);
-                                    }
-                                }.runTaskLater(plugin, 20 * 15);
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 package de.framedev.minekart.listeners;
 
+import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -9,11 +10,15 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.Game;
 import de.framedev.minekart.managers.LocationsManager;
+import de.framedev.minekart.managers.ReflectionUtils;
 import de.framedev.minekart.managers.ServerSwitcher;
+import net.minecraft.server.v1_16_R1.PacketPlayInClientCommand;
+import net.minecraft.server.v1_16_R1.PacketPlayOutRespawn;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +28,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -211,96 +220,89 @@ public class PlayerMoveEffects implements Listener {
                                             playerRounds.remove(player);
                                             playerRounds.put(player, 0);
                                             finishedPlayers.add(player);
+                                            if (finishedPlayers.size() == 0) {
+                                                plugin.getGameManager().getGames().get(0).getPlayers().forEach(players -> {
+                                                    String winMessage = plugin.getLanguageByPlayerConfig(players).getString("WinMessage");
+                                                    winMessage = winMessage.replace('&', '§');
+                                                    winMessage = winMessage.replace("%player%", player.getName());
+                                                    players.sendTitle(winMessage, "");
+                                                });
+                                                plugin.getPlayerStats().addWin(player);
+                                                int win = plugin.getConfig().getInt("Win");
+                                                plugin.getApi().depositPlayer(player, win);
+                                                int wonMoney = plugin.getPlayerStats().getWinsAmount(player);
+                                                wonMoney = wonMoney + win;
+                                                plugin.getPlayerStats().setWinsAmount(player, wonMoney);
+                                            }
                                             String zielErreicht = plugin.getLanguageByPlayerConfig(player).getString("DetectFinish");
                                             zielErreicht = zielErreicht.replace('&', '§');
                                             zielErreicht = zielErreicht.replace("%player%", player.getName());
                                             plugin.getGameManager().getGames().get(0).sendMessageToGame(zielErreicht);
                                             isFinish.put(player, true);
-                                            Player winner = null;
-                                            if (finishedPlayers.size() == 0) {
-                                                for (Player players : plugin.getGameManager().getGames().get(0).getPlayers()) {
-                                                    String winMessage = plugin.getLanguageByPlayerConfig(players).getString("WinMessage");
-                                                    winMessage = winMessage.replace('&', '§');
-                                                    winMessage = winMessage.replace("%player%", player.getName());
-                                                    players.sendTitle(winMessage, "");
-                                                    winner = players;
-                                                }
-                                            }
-                                            if (player.getVehicle() != null) {
-                                                player.getVehicle().removePassenger(player);
-                                                if(plugin.getGameManager().getSpectatorLocation(plugin.getGameManager().getGames().get(0),player.getWorld()) != null) {
-                                                    player.teleport(plugin.getGameManager().getSpectatorLocation(plugin.getGameManager().getGames().get(0),player.getWorld()));
-                                                }
-                                                player.setGameMode(GameMode.SPECTATOR);
-                                                if (finishedPlayers.size() == plugin.getGameManager().getGames().get(0).getPlayers().size()) {
-                                                    if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
-                                                        Player finalWinner = winner;
-                                                        finishedPlayers.forEach(players -> {
-                                                                plugin.getPlayerStats().addWin(player);
-                                                                int win = plugin.getConfig().getInt("WinReward");
-                                                                plugin.getApi().depositPlayer(player, win);
-                                                                int wonMoney = plugin.getPlayerStats().getWinsAmount(player);
-                                                                wonMoney = wonMoney + win;
-                                                                plugin.getPlayerStats().setWinsAmount(player, wonMoney);
-                                                            if(!finalWinner.equals(players)) {
-                                                                int trostPreis = plugin.getConfig().getInt("LoseReward");
-                                                                plugin.getApi().depositPlayer(players,trostPreis);
-                                                            }
-                                                            if (plugin.isBungeecord() || plugin.isCloudNet()) {
-                                                                plugin.getGameManager().getGames().get(0).loadOldItems(players);
-                                                                new ServerSwitcher().connect(players, plugin.getLobbyServer());
-                                                            } else {
-                                                                Location location = new LocationsManager(plugin.getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation();
-                                                                players.teleport(location);
-                                                                plugin.getGameManager().getGames().get(0).loadOldItems(players);
-                                                            }
-                                                        });
-                                                        finishedPlayers.clear();
-                                                        plugin.getGameManager().getGames().get(0).getGameLobby().getPlayers().clear();
-                                                        plugin.getGameManager().getGames().get(0).getPlayers().clear();
-                                                    } else {
-                                                        game.getFinishedWorlds().add(player.getWorld());
-                                                        ArrayList<String> nextMapsWorlds = new ArrayList<>();
-                                                        for (String world : plugin.getGameManager().getMaps(game)) {
-                                                            if (Bukkit.getWorld(world) != null) {
-                                                                if (!world.equalsIgnoreCase(player.getWorld().getName())) {
-                                                                    if (!game.getFinishedWorlds().contains(Bukkit.getWorld(world))) {
-                                                                        nextMapsWorlds.add(world);
-                                                                    }
+                                            player.getVehicle().removePassenger(player);
+                                            ((Pig) player.getVehicle()).setSaddle(false);
+                                            ((Pig) player.getVehicle()).setHealth(0);
+                                            player.setGameMode(GameMode.SPECTATOR);
+                                            if (finishedPlayers.size() == plugin.getGameManager().getGames().get(0).getPlayers().size()) {
+                                                if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
+                                                    finishedPlayers.forEach(players -> {
+                                                        if (plugin.isBungeecord() || plugin.isCloudNet()) {
+                                                            new ServerSwitcher().connect(players, plugin.getLobbyServer());
+                                                        } else {
+                                                            Location location = new LocationsManager(plugin.getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation();
+                                                            players.teleport(location);
+                                                            ItemStack[] items = plugin.getGameManager().getGames().get(0).getOldItems().get(player);
+                                                            plugin.getGameManager().getGames().get(0).getOldItems().remove(player);
+                                                            player.getInventory().setContents(items);
+                                                        }
+                                                    });
+                                                    finishedPlayers.clear();
+                                                    plugin.getGameManager().getGames().get(0).getGameLobby().getPlayers().clear();
+                                                    plugin.getGameManager().getGames().get(0).getPlayers().clear();
+                                                } else {
+                                                    game.getFinishedWorlds().add(player.getWorld());
+                                                    ArrayList<String> nextMapsWorlds = new ArrayList<>();
+                                                    for (String world : plugin.getGameManager().getMaps(game)) {
+                                                        if (Bukkit.getWorld(world) != null) {
+                                                            if (!world.equalsIgnoreCase(player.getWorld().getName())) {
+                                                                if (!game.getFinishedWorlds().contains(Bukkit.getWorld(world))) {
+                                                                    nextMapsWorlds.add(world);
                                                                 }
                                                             }
                                                         }
-                                                        game.setActiveWorld(plugin.getGameManager().pickRandomMap(game, nextMapsWorlds));
-                                                        plugin.getGameManager().spawnPigs(game);
                                                     }
+                                                    game.setActiveWorld(plugin.getGameManager().pickRandomMap(game, nextMapsWorlds));
+                                                    game.getPlayers().forEach(players -> plugin.getGameManager().spawnPigs(game,players));
                                                 }
-                                                if (time2 == 30) {
-                                                    new BukkitRunnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            if (time2 <= 0) {
-                                                                time2 = 30;
-                                                                cancel();
-                                                                roundings.remove(player);
-                                                                roundings.put(player, false);
-                                                            } else {
-                                                                time2--;
-                                                            }
-                                                        }
-                                                    }.runTaskTimerAsynchronously(plugin, 0, 20);
-                                                }
-                                                plugin.getGameManager().setStarted(false);
                                             }
+                                            if (time2 == 30) {
+                                                new BukkitRunnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        if (time2 <= 0) {
+                                                            time2 = 30;
+                                                            cancel();
+                                                            roundings.remove(player);
+                                                            roundings.put(player, false);
+                                                        } else {
+                                                            time2--;
+                                                        }
+                                                    }
+                                                }.runTaskTimerAsynchronously(plugin, 0, 20);
+                                            }
+                                            plugin.getGameManager().setStarted(false);
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    for (Location location : plugin.getGameManager().getCheckPoints(player.getWorld(), plugin.getGameManager().getGames().get(0))) {
-                        if (plugin.getGameManager().isPlayerInCheckPoint(player, location)) {
-                            checkPoints.remove(player);
-                            checkPoints.put(player, location);
+                    if(!checkPoints.isEmpty()) {
+                        for (Location location : plugin.getGameManager().getCheckPoints(player.getWorld(), plugin.getGameManager().getGames().get(0))) {
+                            if (plugin.getGameManager().isPlayerInCheckPoint(player, location)) {
+                                checkPoints.remove(player);
+                                checkPoints.put(player, location);
+                            }
                         }
                     }
                 }
@@ -311,19 +313,38 @@ public class PlayerMoveEffects implements Listener {
     /* CheckPoints ------------------------------------------- CheckPoints */
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (!plugin.getGameManager().getGames().isEmpty()) {
-            if (plugin.getGameManager().getGames().get(0) != null) {
-                if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getEntity())) {
-                    if (!checkPoints.isEmpty() && checkPoints.containsKey(event.getEntity())) {
-                        plugin.getGameManager().spawnPig(checkPoints.get(event.getEntity()), plugin.getGameManager().getGames().get(0));
-                    } else {
-                        Game game = plugin.getGameManager().getGames().get(0);
-                        Location location = plugin.getGameManager().getPigSpawnLocation(game, 1, game.getActiveWorld());
-                        plugin.getGameManager().spawnPig(location,game);
+        Respawn(event.getEntity().getPlayer(),60);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!plugin.getGameManager().getGames().isEmpty()) {
+                    if (plugin.getGameManager().getGames().get(0) != null) {
+                        if(!checkPoints.isEmpty() && checkPoints.containsKey(event.getEntity())) {
+                            Game game = plugin.getGameManager().getGames().get(0);
+                            plugin.getGameManager().spawnPig(checkPoints.get(event.getEntity()), game,event.getEntity().getPlayer());
+                        }
+                        if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getEntity())) {
+                            Game game = plugin.getGameManager().getGames().get(0);
+                            plugin.getGameManager().getGames().get(0).getPigs().remove(event.getEntity().getPlayer());
+                            Location location = plugin.getGameManager().getPigSpawnLocation(game, 1, game.getActiveWorld());
+                            plugin.getGameManager().spawnPig(location, game,event.getEntity().getPlayer());
+                        }
                     }
                 }
             }
-        }
+        }.runTaskLater(plugin,60);
     }
+
+    public void Respawn(final Player player,int Time){
+        Bukkit.getScheduler().runTaskLater(this.plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                ((CraftPlayer)player).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+            }
+        },Time);
+    }
+
     public static HashMap<Player, Location> checkPoints = new HashMap<>();
+
 }

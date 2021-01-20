@@ -58,7 +58,7 @@ public class LobbyManager implements Listener {
         lobbies.get(0).getPlayers().forEach(game::addPlayer);
     }
 
-    int time = 32;
+    int time = 45;
 
     public void startLobby(Game game) {
         new BukkitRunnable() {
@@ -70,14 +70,14 @@ public class LobbyManager implements Listener {
                         for (Player player : game.getPlayers()) {
                             Main.getInstance().getGameManager().getGames().get(0).getPlayerRounds().put(player, 0);
                         }
-                        game.getPlayers().forEach(player -> {
+                        /*game.getPlayers().forEach(player -> {
                             Main.getInstance().getScoreBoardManager().setScoreBoard();
                             Main.getInstance().getScoreBoardManager().setPlayerScoreboard(player);
                             Main.getInstance().getScoreBoardManager().scoreBoardUpdater(player);
                             Main.getInstance().log(Main.getInstance().getPrefix() + "§aScoreboard is Now Updating!");
                             // Debugging Scoreboard$$
                             Main.getInstance().debug(Main.getInstance().getScoreBoardManager().getScoreBoard());
-                        });
+                        });*/
                         PlayerMoveEffects.setStarted(true);
                         GameStartedListener.startGameScheduler(game);
                         cancel();

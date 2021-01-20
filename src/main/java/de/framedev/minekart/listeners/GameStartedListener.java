@@ -4,7 +4,6 @@ import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.Game;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,22 +28,17 @@ public class GameStartedListener implements Listener {
     public void onMove(PlayerMoveEvent event) {
         if (!plugin.getGameManager().getGames().isEmpty()) {
             if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
-                event.setCancelled(true);
+                if(event.getPlayer().isOnGround()) {
+                    if (!plugin.getGameManager().isStarted()) {
+                        event.setCancelled(true);
+                    }
+                }
             }
         }
     }
 
     @EventHandler
     public void onSwitchItem(PlayerSwapHandItemsEvent event) {
-        if (!plugin.getGameManager().getGames().isEmpty()) {
-            if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event) {
         if (!plugin.getGameManager().getGames().isEmpty()) {
             if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
                 event.setCancelled(true);
@@ -63,7 +57,7 @@ public class GameStartedListener implements Listener {
                     startTime = 12;
                     if (Main.getInstance().getGameManager().startGame(game)) {
                         game.getPlayers().forEach(players -> {
-                            //players.sendMessage("§aStart");
+                            players.sendMessage("§aStart");
                         });
                         cancel();
                     } else {

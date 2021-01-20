@@ -2,20 +2,12 @@ package de.framedev.minekart.main;
 
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.FlagContext;
-import com.sk89q.worldguard.protection.flags.FlagUtil;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import de.framedev.minekart.api.MineKartAPI;
-import de.framedev.minekart.commands.CreateGameCMD;
-import de.framedev.minekart.commands.PlayerStatsCMD;
-import de.framedev.minekart.listeners.*;
 import de.framedev.minekart.managers.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -25,14 +17,9 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -62,8 +49,6 @@ public class Main extends JavaPlugin {
 
     /* Variables */
     private String prefix;
-    private ItemStack[] lobbyInventory;
-
     //Not used
     private String noPermission;
     private boolean bungeecord;
@@ -72,9 +57,9 @@ public class Main extends JavaPlugin {
     private String lobbyGroup;
 
     /* Lists */
+    private ArrayList<Listener> listeners;
     private HashMap<Game, Cuboid> cuboids;
     private ArrayList<SpecialItem> specialItems;
-    private ArrayList<Listener> listeners;
     private HashMap<String, CommandExecutor> commands;
     private HashMap<String, TabCompleter> tabCompleters;
 
@@ -88,13 +73,6 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         /* Instance */
         instance = this;
-
-        this.lobbyInventory = new ItemStack[3*9];
-        ItemStack leaveItem = new ItemStack(Material.BLUE_BED);
-        ItemMeta leaveMeta = leaveItem.getItemMeta();
-        leaveMeta.setDisplayName("§aLeave Game");
-        leaveItem.setItemMeta(leaveMeta);
-        this.lobbyInventory[0] = leaveItem;
 
         /* WorldGuard */
         this.worldGuardPlugin = getWorldGuard();
@@ -137,7 +115,7 @@ public class Main extends JavaPlugin {
         /* prefix */
         this.prefix = configuration.getString("Prefix");
         prefix = prefix.replace('&', '§');
-        prefix = prefix.replace(">>", "»");
+        prefix = prefix.replace(">>","»");
 
         /* Register */
         new RegisterManager(this);
@@ -173,10 +151,10 @@ public class Main extends JavaPlugin {
         }
 
         /* Check Languages */
-        this.langConfigDE = new CustomConfig("lang_de_DE");
-        this.langConfigEN = new CustomConfig("lang_en_EN");
-        this.langConfigDE.createConfig();
-        this.langConfigEN.createConfig();
+            this.langConfigDE = new CustomConfig("lang_de_DE");
+            this.langConfigEN = new CustomConfig("lang_en_EN");
+            this.langConfigDE.createConfig();
+            this.langConfigEN.createConfig();
 
         /* Check if WorldEdit is Null */
         if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
@@ -198,21 +176,15 @@ public class Main extends JavaPlugin {
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new ServerSwitcher());
 
         this.bungeecord = getConfig().getBoolean("BungeeCord");
-        //this.cloudNet = getConfig().getBoolean("CloudNet");
+        this.cloudNet = getConfig().getBoolean("CloudNet");
 
-        if (isBungeecord() || isCloudNet()) {
+        if(isBungeecord() || isCloudNet()) {
             this.lobbyServer = getConfig().getString("LobbyServer");
-            /*if(getConfig().contains("CloudNetLobbyGroup")) {
-                this.lobbyGroup = getConfig().getString("CloudNetLobbyGroup");
-            }
-        */
+            this.lobbyGroup = getConfig().getString("CloudNetLobbyGroup");
         }
 
+        new MineKartAPI();
         getLogger().log(Level.WARNING, "This Plugin is Work in Progress");
-    }
-
-    public ItemStack[] getLobbyInventory() {
-        return lobbyInventory;
     }
 
     public boolean isCloudNet() {
@@ -274,8 +246,7 @@ public class Main extends JavaPlugin {
     }
 
     public FileConfiguration getLanguageByPlayerConfig(Player player) {
-        CraftPlayer entityPlayer = ((CraftPlayer) player);
-        if (entityPlayer.getLocale().equalsIgnoreCase("de_DE")) {
+        if(player.getLocale().equalsIgnoreCase("de_DE")) {
             return this.langConfigDE.getConfiguration();
         } else {
             return this.langConfigEN.getConfiguration();
@@ -406,6 +377,9 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if(!getGameManager().getGames().get(0).getPigs().isEmpty()) {
+            getGameManager().getGames().get(0).getPigs().forEach((player, minecart) -> minecart.remove());
+        }
         Bukkit.getConsoleSender().sendMessage(getPrefix() + "§cPlugin Disabled!");
     }
 
@@ -428,10 +402,10 @@ public class Main extends JavaPlugin {
             if (block.getType() == Material.AIR) {
             } else {
                 Material material = Material.getMaterial(Objects.requireNonNull(Main.getInstance().getConfig().getString("StartBlock")));
-                if (material != null) {
+                if(material != null) {
                     block.setType(material);
                 } else {
-                    getLogger().log(Level.SEVERE, "Cannot found the Material in the Config.yml!");
+                    getLogger().log(Level.SEVERE,"Cannot found the Material in the Config.yml!");
                 }
             }
         }
@@ -442,7 +416,6 @@ public class Main extends JavaPlugin {
         RegionContainer container = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionManager regions = container.get(new BukkitWorld(location1.getWorld()));
         regions.addRegion(region);
-        regions.getRegion("__global__").setFlag(Flags.TNT, StateFlag.State.DENY);
         Main.getInstance().getCuboids().put(game, cuboid);
         new LocationsManager(game.getCupName() + "location1").setLocation(location1);
         new LocationsManager(game.getCupName() + "location2").setLocation(location2);
@@ -452,7 +425,6 @@ public class Main extends JavaPlugin {
 
     /**
      * Diese Mthode wird verwenden von Debuggin von Objekten
-     *
      * @param obj das Object zu Debuggen
      */
     public void debug(Object obj) {
@@ -461,6 +433,7 @@ public class Main extends JavaPlugin {
     }
 
     /**
+     *
      * @param text Text to send
      */
     public void log(String text) {

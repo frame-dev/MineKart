@@ -1,5 +1,7 @@
 package de.framedev.minekart.managers;
 
+import de.framedev.minekart.listeners.GameStartedListener;
+import de.framedev.minekart.listeners.PlayerMoveEffects;
 import de.framedev.minekart.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -89,7 +91,7 @@ public class GameManager implements Serializable {
         if (Main.getInstance().getGameManagerConfig().getList("Game." + game.getCupName() + ".Maps") != null) {
             return (ArrayList<String>) Main.getInstance().getGameManagerConfig().getList("Game." + game.getCupName() + ".Maps");
         }
-        throw new NullPointerException("Es konnte keine Maps gefunden werden!");
+        throw new NullPointerException("Es konnten keine Maps gefunden werden!");
     }
 
     public boolean setPigSpawnLocation(Game game, Location location, int number) {
@@ -141,39 +143,36 @@ public class GameManager implements Serializable {
      * @param game the Game was created to start the Game
      */
     @SuppressWarnings("deprecation")
-    public void spawnPigs(Game game) {
+    public void spawnPigs(Game game, Player player) {
         if (game.getActiveWorld() != null) {
             ConfigurationSection cs = Main.getInstance().getGameManagerConfig().cfg.getConfigurationSection("Game." + game.getCupName() + "." + game.getActiveWorld().getName() + ".Pig");
+            ArrayList<Location> locations = new ArrayList<>();
             if (cs != null) {
-                for (int i = 1; i <= game.getPlayers().size(); i++) {
-                    Location location = getPigSpawnLocation(game, i, game.getActiveWorld());
-                    if (location != null) {
-                        Minecart entity = (Minecart) game.getActiveWorld().spawnEntity(location, EntityType.MINECART);
-                        for (Player player : game.getPlayers()) {
-                            game.saveOldItems(player);
-                            game.getPigs().put(player, entity);
-                            player.teleport(location);
-                            Location spawn = location.add(0, 2, 0);
-                            Entity cart = player.getWorld().spawnEntity(spawn,
-                                    EntityType.MINECART);
-                            cart.setPassenger(player);
-                        }
-                    }
+                for (int i = 1; i < game.getPlayers().size(); i++) {
+                    locations.add(getPigSpawnLocation(game, i, game.getActiveWorld()));
                 }
             }
+            locations.forEach(l -> {
+                if (player.getLocation() != l) {
+                    player.teleport(l);
+                    Location spawn = l.add(0, 2, 0);
+                    PlayerMoveEffects.checkPoints.put(player,l);
+                    Entity cart = player.getWorld().spawnEntity(spawn,
+                            EntityType.MINECART);
+                    game.getPigs().put(player, (Minecart) cart);
+                    cart.setPassenger(player);
+                }
+            });
         }
     }
 
-    public void spawnPig(Location location, Game game) {
-        Minecart entity = (Minecart) game.getActiveWorld().spawnEntity(location, EntityType.MINECART);
-        for (Player player : game.getPlayers()) {
-            game.getPigs().put(player, entity);
-            player.teleport(location);
-            Location spawn = location.add(0, 2, 0);
-            Entity cart = player.getWorld().spawnEntity(spawn,
-                    EntityType.MINECART);
-            cart.setPassenger(player);
-        }
+    public void spawnPig(Location location, Game game, Player player) {
+        player.teleport(location);
+        Location spawn = location.add(0, 2, 0);
+        Entity cart = player.getWorld().spawnEntity(spawn,
+                EntityType.MINECART);
+        game.getPigs().put(player, (Minecart) cart);
+        cart.setPassenger(player);
     }
 
     public void setStarted(boolean started) {
@@ -239,7 +238,7 @@ public class GameManager implements Serializable {
      */
     public boolean startGame(Game game) {
         if (getMaps(game) != null) {
-            spawnPigs(game);
+            game.getPlayers().forEach(player -> spawnPigs(game, player));
             started = true;
             return true;
         }
@@ -274,7 +273,7 @@ public class GameManager implements Serializable {
 
     public boolean createCheckPoint(World world, Game game, Location location, int i) {
         if (getMaps(game).contains(world.getName())) {
-            if (!Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world")) {
+            if (!Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world." +  world.getName() + "." + i)) {
                 Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints.world", world.getName() + "." + i);
                 Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".x", location.getBlockX());
                 Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".y", location.getBlockY());
@@ -308,25 +307,5 @@ public class GameManager implements Serializable {
             return player.getLocation().distance(checkpoint) <= 10;
         }
         return false;
-    }
-
-    public void setSpectatorLocation(Game game, Location location) {
-        FileConfiguration cfg = Main.getInstance().getGameManagerConfig().cfg;
-        if(location.getWorld() == null) return;
-        cfg.set("Game." + game.getCupName() + ".spectator." + location.getWorld().getName() + ".x", location.getX());
-        cfg.set("Game." + game.getCupName() + ".spectator." + location.getWorld().getName() + ".y", location.getY());
-        cfg.set("Game." + game.getCupName() + ".spectator." + location.getWorld().getName() + ".x", location.getZ());
-        Main.getInstance().getGameManagerConfig().saveConfig();
-    }
-
-    public Location getSpectatorLocation(Game game, World world) {
-        if (Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".spectator." + world.getName())) {
-            FileConfiguration cfg = Main.getInstance().getGameManagerConfig().cfg;
-            double x = cfg.getDouble("Game." + game.getCupName() + ".spectator." + world.getName() + ".x");
-            double y = cfg.getDouble("Game." + game.getCupName() + ".spectator." + world.getName() + ".y");
-            double z = cfg.getDouble("Game." + game.getCupName() + ".spectator." + world.getName() + ".z");
-            return new Location(world, x, y, z);
-        }
-        return null;
     }
 }

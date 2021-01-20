@@ -63,7 +63,7 @@ public class ScoreBoardManager {
     }
 
     public int getPlace(Player player) {
-        Game game = plugin.getGameManager().getGames().get(0);
+        Game game = plugin.getGameManager().getGamePlayers().get(player);
         Player nearest = getNearestPlayerFromLocation(player, player.getLocation());
         if (game.getPlayerRounds().get(nearest) < PlayerMoveEffects.getPlayerRounds().get(player)) {
             return 2;
@@ -75,8 +75,9 @@ public class ScoreBoardManager {
         return 8;
     }
 
-    public static Player getNearestPlayerFromLocation(Player player, Location location) {
+    public static Player getNearestPlayerFromLocation(Player playerr, Location location) {
         Game game = Main.getInstance().getGameManager().getGames().get(0);
+        Player player = null;
         double distance = 9999D;
 
         for (Player players : game.getPlayers()) {

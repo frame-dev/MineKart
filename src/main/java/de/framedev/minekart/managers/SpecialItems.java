@@ -32,14 +32,6 @@ public class SpecialItems {
         return false;
     }
 
-    public boolean removeSpecialItem(SpecialItem specialItem) {
-        if(specialItems.contains(specialItem)) {
-            specialItems.remove(specialItem);
-            return true;
-        }
-        return false;
-    }
-
     public SpecialItem createSpecialItem(Material material, String displayName) {
         return new SpecialItem(material).setDisplayName(displayName).setAmount(1);
     }
