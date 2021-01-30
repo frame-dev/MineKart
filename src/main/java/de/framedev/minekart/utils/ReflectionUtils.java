@@ -1,4 +1,4 @@
-package de.framedev.minekart.managers;
+package de.framedev.minekart.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

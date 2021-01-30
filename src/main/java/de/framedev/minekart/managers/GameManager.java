@@ -1,6 +1,5 @@
 package de.framedev.minekart.managers;
 
-import de.framedev.minekart.listeners.GameStartedListener;
 import de.framedev.minekart.listeners.PlayerMoveEffects;
 import de.framedev.minekart.main.Main;
 import org.bukkit.Bukkit;

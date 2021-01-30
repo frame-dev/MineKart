@@ -68,7 +68,6 @@ public class Main extends JavaPlugin {
 
     /* Economy /Vault */
     private Economy economy;
-
     @Override
     public void onEnable() {
         /* Instance */
@@ -83,6 +82,7 @@ public class Main extends JavaPlugin {
         /* Special Items */
         this.specialItems = new ArrayList<>();
         this.specialItemsManager = new SpecialItems();
+        
 
         /* cfg  Config.yml */
         this.configuration = new CustomConfig("config");

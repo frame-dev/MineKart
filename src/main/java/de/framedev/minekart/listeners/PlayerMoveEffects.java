@@ -1,6 +1,5 @@
 package de.framedev.minekart.listeners;
 
-import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -10,10 +9,8 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.Game;
 import de.framedev.minekart.managers.LocationsManager;
-import de.framedev.minekart.managers.ReflectionUtils;
 import de.framedev.minekart.managers.ServerSwitcher;
 import net.minecraft.server.v1_16_R1.PacketPlayInClientCommand;
-import net.minecraft.server.v1_16_R1.PacketPlayOutRespawn;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -28,10 +25,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
