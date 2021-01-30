@@ -74,6 +74,19 @@ public class PlayerClickItem implements Listener {
                             if (event.getItem() != null) {
                                 ItemStack item = event.getItem();
                                 if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                                    if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§cReset")) {
+                                        event.setCancelled(true);
+                                        if(!PlayerMoveEffects.checkPoints.isEmpty() && PlayerMoveEffects.checkPoints.containsKey(event.getPlayer())) {
+                                            Game game = plugin.getGameManager().getGames().get(0);
+                                            plugin.getGameManager().spawnPig(PlayerMoveEffects.checkPoints.get(event.getPlayer()), game,event.getPlayer());
+                                        }
+                                        if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
+                                            Game game = plugin.getGameManager().getGames().get(0);
+                                            plugin.getGameManager().getGames().get(0).getPigs().remove(event.getPlayer().getPlayer());
+                                            Location location = plugin.getGameManager().getPigSpawnLocation(game, 1, game.getActiveWorld());
+                                            plugin.getGameManager().spawnPig(location, game,event.getPlayer().getPlayer());
+                                        }
+                                    }
                                     for (SpecialItem specialItem : plugin.getSpecialItems()) {
                                         if (specialItem != null) {
                                             if (item.getType() == specialItem.getType() && item.getItemMeta().getDisplayName().equalsIgnoreCase(specialItem.getDisplayName())) {

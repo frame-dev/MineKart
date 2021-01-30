@@ -4,6 +4,7 @@ import de.framedev.minekart.listeners.PlayerMoveEffects;
 import de.framedev.minekart.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -136,8 +137,6 @@ public class GameManager implements Serializable {
         }
     }
 
-    private World activeWorld;
-
     /**
      * @param game the Game was created to start the Game
      */
@@ -154,8 +153,9 @@ public class GameManager implements Serializable {
             locations.forEach(l -> {
                 if (player.getLocation() != l) {
                     player.teleport(l);
+                    player.getInventory().setItem(0, new SpecialItem(Material.NETHER_STAR).setDisplayName("§cReset").build());
                     Location spawn = l.add(0, 2, 0);
-                    PlayerMoveEffects.checkPoints.put(player,l);
+                    PlayerMoveEffects.checkPoints.put(player, l);
                     Entity cart = player.getWorld().spawnEntity(spawn,
                             EntityType.MINECART);
                     game.getPigs().put(player, (Minecart) cart);
@@ -272,7 +272,7 @@ public class GameManager implements Serializable {
 
     public boolean createCheckPoint(World world, Game game, Location location, int i) {
         if (getMaps(game).contains(world.getName())) {
-            if (!Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world." +  world.getName() + "." + i)) {
+            if (!Main.getInstance().getGameManagerConfig().contains("Game." + game.getCupName() + ".CheckPoints.world." + world.getName() + "." + i)) {
                 Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints.world", world.getName() + "." + i);
                 Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".x", location.getBlockX());
                 Main.getInstance().getGameManagerConfig().set("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + i + ".y", location.getBlockY());
