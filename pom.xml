@@ -6,7 +6,7 @@
 
     <groupId>de.framedev</groupId>
     <artifactId>MineKart</artifactId>
-    <version>1.5.0-BETA</version>
+    <version>1.5.1-BETA</version>
     <packaging>jar</packaging>
 
     <name>MineKart</name>

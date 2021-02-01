@@ -1,5 +1,11 @@
 package de.framedev.minekart.listeners;
 
+import de.dytanic.cloudnet.api.CloudAPI;
+import de.dytanic.cloudnet.bridge.CloudProxy;
+import de.dytanic.cloudnet.bridge.CloudServer;
+import de.dytanic.cloudnet.lib.player.CloudPlayer;
+import de.dytanic.cloudnet.lib.server.ServerState;
+import de.dytanic.cloudnetcore.CloudNet;
 import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.Game;
 import org.bukkit.event.EventHandler;
@@ -59,6 +65,10 @@ public class GameStartedListener implements Listener {
                         game.getPlayers().forEach(players -> {
                             players.sendMessage("§aStart");
                         });
+                        if(Main.getInstance().isCloudNet()) {
+                            CloudServer server = CloudServer.getInstance();
+                            server.setServerState(ServerState.INGAME);
+                        }
                         cancel();
                     } else {
                         System.err.println("error");

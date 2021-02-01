@@ -1,5 +1,6 @@
 package de.framedev.minekart.managers;
 
+import de.framedev.javautils.Generators;
 import de.framedev.minekart.listeners.PlayerMoveEffects;
 import de.framedev.minekart.main.Main;
 import org.bukkit.Bukkit;
@@ -168,29 +169,6 @@ public class GameManager implements Serializable {
         this.started = started;
     }
 
-    public static final class IntRandomNumberGenerator {
-
-        private final PrimitiveIterator.OfInt randomIterator;
-
-        /**
-         * Initialize a new random number generator that generates
-         * random numbers in the range [min, max]
-         *
-         * @param min - the min value (inclusive)
-         * @param max - the max value (inclusive)
-         */
-        public IntRandomNumberGenerator(int min, int max) {
-            randomIterator = new Random().ints(min, max + 1).iterator();
-        }
-
-        /**
-         * @return a random number in the range (min, max)
-         */
-        public int nextInt() {
-            return randomIterator.nextInt();
-        }
-    }
-
     /**
      * @param game the Game was created
      * @return a Random Picked World
@@ -199,7 +177,7 @@ public class GameManager implements Serializable {
         if (getMaps(game).size() == 1) {
             return Bukkit.getWorld(getMaps(game).get(0));
         }
-        IntRandomNumberGenerator random = new IntRandomNumberGenerator(0, getMaps(game).size());
+        Generators.IntGenerator random = new Generators.IntGenerator(0, getMaps(game).size());
         return Bukkit.getWorld(getMaps(game).get(random.nextInt() - 1));
     }
 
@@ -207,7 +185,7 @@ public class GameManager implements Serializable {
         if (getMaps(game).size() == 1) {
             return Bukkit.getWorld(getMaps(game).get(0));
         }
-        IntRandomNumberGenerator random = new IntRandomNumberGenerator(0, worlds.size());
+        Generators.IntGenerator random = new Generators.IntGenerator(0, worlds.size());
         return Bukkit.getWorld(worlds.get(random.nextInt() - 1));
     }
 
@@ -215,7 +193,7 @@ public class GameManager implements Serializable {
         if (Main.getInstance().getSpecialItems().size() == 1) {
             return Main.getInstance().getSpecialItems().get(0).build();
         }
-        IntRandomNumberGenerator random = new IntRandomNumberGenerator(0, Main.getInstance().getSpecialItems().size());
+        Generators.IntGenerator random = new Generators.IntGenerator(0, Main.getInstance().getSpecialItems().size());
         return Main.getInstance().getSpecialItems().get(random.nextInt() - 1).build();
     }
 
@@ -281,8 +259,10 @@ public class GameManager implements Serializable {
                 ConfigurationSection cs = Main.getInstance().getGameManagerConfig().getConfiguration().getConfigurationSection("Game." + game.getCupName() + ".CheckPoints.world." + world.getName());
                 if (cs != null) {
                     for (String s : cs.getKeys(false)) {
-                        locations.add(new Location(world, Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".x"),
-                                Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".y"), Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".z")));
+                        locations.add(new Location(world,
+                                Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".x"),
+                                Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".y"),
+                                Main.getInstance().getGameManagerConfig().getInt("Game." + game.getCupName() + ".CheckPoints." + world.getName() + "." + s + ".z")));
                     }
                     return locations;
                 }

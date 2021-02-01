@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MineKart">
+    <output-path>$PROJECT_DIR$/../../Programmieren/Developer/Plugins</output-path>
+    <root id="archive" name="MineKart.jar">
+      <element id="module-output" name="MineKart" />
+      <element id="file-copy" path="$PROJECT_DIR$/../../Programmieren/Developer/Plugins/JavaUtils.jar" />
+    </root>
+  </artifact>
+</component>

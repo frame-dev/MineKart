@@ -7,8 +7,18 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import de.dytanic.cloudnet.api.CloudAPI;
+import de.dytanic.cloudnet.bridge.CloudProxy;
+import de.dytanic.cloudnet.bridge.CloudServer;
+import de.dytanic.cloudnet.lib.CloudNetwork;
+import de.dytanic.cloudnet.lib.player.CloudPlayer;
+import de.dytanic.cloudnet.lib.server.ServerGroup;
+import de.dytanic.cloudnet.lib.server.ServerState;
+import de.dytanic.cloudnet.lib.server.info.ServerInfo;
+import de.dytanic.cloudnetcore.CloudNet;
 import de.framedev.minekart.api.MineKartAPI;
 import de.framedev.minekart.managers.*;
+import de.framedev.mysqlapi.managers.Ser;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -180,12 +190,26 @@ public class Main extends JavaPlugin {
         this.cloudNet = getConfig().getBoolean("CloudNet");
 
         if(isBungeecord() || isCloudNet()) {
-            this.lobbyServer = getConfig().getString("LobbyServer");
+            this.lobbyServer = getConfig().getString("BungeeCordLobby");
             this.lobbyGroup = getConfig().getString("CloudNetLobbyGroup");
         }
 
         new MineKartAPI();
+        if(isCloudNet()) {
+            CloudServer.getInstance().setServerState(ServerState.LOBBY);
+        }
         getLogger().log(Level.WARNING, "This Plugin is Work in Progress");
+    }
+
+    public void connectToCloudServer(Player player) {
+        if(isCloudNet()) {
+            Collection<ServerInfo> serverGroup = CloudAPI.getInstance().getServers(lobbyGroup);
+            CloudPlayer cloudPlayer = CloudAPI.getInstance().getOnlinePlayer(player.getUniqueId());
+            for (ServerInfo info : serverGroup) {
+                cloudPlayer.getPlayerExecutor().sendPlayer(cloudPlayer, String.valueOf(info));
+                return;
+            }
+        }
     }
 
     public boolean isCloudNet() {
@@ -381,6 +405,8 @@ public class Main extends JavaPlugin {
         if(!getGameManager().getGames().get(0).getPigs().isEmpty()) {
             getGameManager().getGames().get(0).getPigs().forEach((player, minecart) -> minecart.remove());
         }
+        if(isCloudNet())
+            CloudServer.getInstance().setServerState(ServerState.OFFLINE);
         Bukkit.getConsoleSender().sendMessage(getPrefix() + "§cPlugin Disabled!");
     }
 

@@ -239,7 +239,11 @@ public class PlayerMoveEffects implements Listener {
                                             if (finishedPlayers.size() == plugin.getGameManager().getGames().get(0).getPlayers().size()) {
                                                 if (plugin.getGameManager().getGames().get(0).getFinishedWorlds().size() == plugin.getGameManager().getMaps(plugin.getGameManager().getGames().get(0)).size()) {
                                                     finishedPlayers.forEach(players -> {
-                                                        if (plugin.isBungeecord() || plugin.isCloudNet()) {
+                                                        if(plugin.isCloudNet()) {
+                                                            Bukkit.getServer().shutdown();
+                                                            plugin.connectToCloudServer(player);
+                                                        }
+                                                        if (plugin.isBungeecord()) {
                                                             new ServerSwitcher().connect(players, plugin.getLobbyServer());
                                                         } else {
                                                             Location location = new LocationsManager(plugin.getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation();

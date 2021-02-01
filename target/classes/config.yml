@@ -20,7 +20,7 @@ MySQL: false
 Win: 100
 
 # ItemBox Default is GOLD_BLOCK
-ItemBlock: GOLD_BLOCK
+ItemBlock: YELLOW_CONCRETE
 
 # Start / Finish Block Default is YELLOW_TERRACOTTA
 StartBlock: YELLOW_TERRACOTTA
