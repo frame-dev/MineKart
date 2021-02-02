@@ -14,3 +14,34 @@ commands:
     aliases:
       - plstats
       - pstats
+
+permissions:
+  minekart.*:
+    children:
+      minekart.admin.create: true
+      minekart.admin.addmap: true
+      minekart.quickstart: true
+      minekart.admin.setlobby: true
+      minekart.admin.setcart: true
+      minekart.admin.checkpoint: true
+      minekart.admin.marker: true
+      minekart.admin.hologram: true
+      minekart.admin.renamemap: true
+  minekart.admin.create:
+    default: op
+  minekart.admin.addmap:
+    default: op
+  minekart.quickstart:
+    default: op
+  minekart.admin.setlobby:
+    default: op
+  minekart.admin.setcart:
+    default: op
+  minekart.admin.checkpoint:
+    default: op
+  minekart.admin.marker:
+    default: op
+  minekart.admin.hologram:
+    default: op
+  minekart.admin.renamemap:
+    default: op
