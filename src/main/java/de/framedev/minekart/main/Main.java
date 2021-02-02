@@ -29,6 +29,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -73,6 +74,7 @@ public class Main extends JavaPlugin {
     private ArrayList<SpecialItem> specialItems;
     private HashMap<String, CommandExecutor> commands;
     private HashMap<String, TabCompleter> tabCompleters;
+    private InventoryManager inventory;
 
     /* WorldGuard */
     public WorldGuardPlugin worldGuardPlugin;
@@ -83,6 +85,13 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         /* Instance */
         instance = this;
+
+        this.inventory = new InventoryManager();
+        this.inventory.setTitle("§aLobby");
+        this.inventory.setSize(1);
+        inventory.addItem(new SpecialItem(Material.DIAMOND).setDisplayName("§aQuickStart").build());
+        inventory.addItem(new SpecialItem(Material.NETHER_PORTAL).setDisplayName("§cLeave").build());
+        inventory.create();
 
         /* WorldGuard */
         this.worldGuardPlugin = getWorldGuard();
@@ -201,7 +210,11 @@ public class Main extends JavaPlugin {
         getLogger().log(Level.WARNING, "This Plugin is Work in Progress");
     }
 
-    public void connectToCloudServer(Player player) {
+    public InventoryManager getInventory() {
+        return inventory;
+    }
+
+    public void connectToCloudLobbyServer(Player player) {
         if(isCloudNet()) {
             Collection<ServerInfo> serverGroup = CloudAPI.getInstance().getServers(lobbyGroup);
             CloudPlayer cloudPlayer = CloudAPI.getInstance().getOnlinePlayer(player.getUniqueId());

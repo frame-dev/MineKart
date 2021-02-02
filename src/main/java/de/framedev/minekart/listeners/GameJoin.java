@@ -3,6 +3,7 @@ package de.framedev.minekart.listeners;
 import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.Holograms;
 import de.framedev.minekart.managers.LocationsManager;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -28,8 +29,13 @@ public class GameJoin implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (plugin.getConfig().getBoolean("BungeeCord")) {
+        Player player = event.getPlayer();
+        if (plugin.getConfig().getBoolean("BungeeCord") || plugin.isCloudNet()) {
             plugin.getLobbyManager().getLobbies().get(0).addPlayer(event.getPlayer());
+            if(player.hasPermission("minekart.quickstart")) {
+                player.getInventory().setItem(0,plugin.getInventory().getItem(0));
+            }
+            player.getInventory().setItem(8,plugin.getInventory().getItem(1));
         }
         ArrayList<String> holoText = new ArrayList<>();
         if (event.getPlayer().getLocale().equalsIgnoreCase("de_DE")) {

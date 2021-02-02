@@ -241,7 +241,7 @@ public class PlayerMoveEffects implements Listener {
                                                     finishedPlayers.forEach(players -> {
                                                         if(plugin.isCloudNet()) {
                                                             Bukkit.getServer().shutdown();
-                                                            plugin.connectToCloudServer(player);
+                                                            plugin.connectToCloudLobbyServer(player);
                                                         }
                                                         if (plugin.isBungeecord()) {
                                                             new ServerSwitcher().connect(players, plugin.getLobbyServer());

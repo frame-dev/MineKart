@@ -62,6 +62,11 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 Main.getInstance().getLobbyManager().startLobby(games);
                 games.getOldItems().put((Player) sender, ((Player) sender).getInventory().getContents());
                 ((Player) sender).teleport(new LocationsManager(games.getCupName() + ".lobby").getLocation());
+                Player player = (Player) sender;
+                if(player.hasPermission("minekart.quickstart")) {
+                    player.getInventory().setItem(0,Main.getInstance().getInventory().getItem(0));
+                }
+                player.getInventory().setItem(8,Main.getInstance().getInventory().getItem(1));
             }
             if (args[0].equalsIgnoreCase("setlobby")) {
                 Player player = (Player) sender;
@@ -76,6 +81,11 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 if (games.getGameLobby().getPlayers().size() >= games.getMinPlayers()) {
                     Main.getInstance().getLobbyManager().startLobby(games);
                 }
+                Player player = (Player) sender;
+                if(player.hasPermission("minekart.quickstart")) {
+                    player.getInventory().setItem(0,Main.getInstance().getInventory().getItem(0));
+                }
+                player.getInventory().setItem(8,Main.getInstance().getInventory().getItem(1));
             }
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("setpig")) {
@@ -110,7 +120,9 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
             if(args[0].equalsIgnoreCase("leave")) {
                 Main.getInstance().getGameManager().getGames().get(0).removePlayer((Player) sender);
                 Main.getInstance().getGameManager().getGames().get(0).getGameLobby().removePlayer((Player) sender);
-                if(!Main.getInstance().isBungeecord()) {
+                if(Main.getInstance().isCloudNet()) {
+                    Main.getInstance().connectToCloudLobbyServer((Player) sender);
+                } else if(!Main.getInstance().isBungeecord()) {
                     ((Player) sender).teleport(new LocationsManager(Main.getInstance().getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation());
                 } else {
                     new ServerSwitcher().connect((Player) sender,Main.getInstance().getLobbyServer());
