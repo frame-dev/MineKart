@@ -8,10 +8,14 @@ import de.dytanic.cloudnet.lib.server.ServerState;
 import de.dytanic.cloudnetcore.CloudNet;
 import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.Game;
+import de.framedev.minekart.managers.SpecialItem;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /*
@@ -56,6 +60,7 @@ public class GameStartedListener implements Listener {
 
     @SuppressWarnings("deprecation")
     public static void startGameScheduler(Game game) {
+        game.getPlayers().forEach(player -> Main.getInstance().getGameManager().spawnPigs(game, player));
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -64,6 +69,18 @@ public class GameStartedListener implements Listener {
                     if (Main.getInstance().getGameManager().startGame(game)) {
                         game.getPlayers().forEach(players -> {
                             players.sendMessage("§aStart");
+                            for(ItemStack stack : players.getInventory().getContents()) {
+                                if(stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()) {
+                                    if(stack.getItemMeta().getDisplayName().equalsIgnoreCase("§aQuickStart")) {
+                                        players.getInventory().remove(stack);
+                                    } else if(stack.getItemMeta().getDisplayName().equalsIgnoreCase("§cLeave")) {
+                                        ItemMeta meta = stack.getItemMeta();
+                                        meta.setDisplayName("§cLeave Game");
+                                        stack.setItemMeta(meta);
+                                    }
+                                }
+                            }
+                            players.getInventory().setItem(0,new SpecialItem(Material.BONE).setDisplayName("§cReset").build());
                         });
                         if(Main.getInstance().isCloudNet()) {
                             CloudServer server = CloudServer.getInstance();

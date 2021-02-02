@@ -71,6 +71,7 @@ public class LobbyManager implements Listener {
                     if (hasGameEnoughPlayers(game)) {
                         addPlayerToGame(game);
                         for (Player player : game.getPlayers()) {
+                            lobbies.get(0).removePlayer(player);
                             Main.getInstance().getGameManager().getGames().get(0).getPlayerRounds().put(player, 0);
                         }
                         /*game.getPlayers().forEach(player -> {

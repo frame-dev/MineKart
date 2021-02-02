@@ -205,7 +205,6 @@ public class GameManager implements Serializable {
      */
     public boolean startGame(Game game) {
         if (getMaps(game) != null) {
-            game.getPlayers().forEach(player -> spawnPigs(game, player));
             started = true;
             return true;
         }

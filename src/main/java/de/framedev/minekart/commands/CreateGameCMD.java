@@ -61,6 +61,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 Main.getInstance().getLobbyManager().getLobbies().get(0).addPlayer((Player) sender);
                 Main.getInstance().getLobbyManager().startLobby(games);
                 games.getOldItems().put((Player) sender, ((Player) sender).getInventory().getContents());
+                ((Player) sender).getInventory().clear();
                 ((Player) sender).teleport(new LocationsManager(games.getCupName() + ".lobby").getLocation());
                 Player player = (Player) sender;
                 if(player.hasPermission("minekart.quickstart")) {
@@ -77,6 +78,8 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
             if (args[0].equalsIgnoreCase("join")) {
                 Game games = Main.getInstance().getGameManager().getGames().get(0);
                 Main.getInstance().getLobbyManager().getLobbies().get(0).addPlayer((Player) sender);
+                games.getOldItems().put((Player) sender, ((Player) sender).getInventory().getContents());
+                ((Player) sender).getInventory().clear();
                 ((Player) sender).teleport(new LocationsManager(games.getCupName() + ".lobby").getLocation());
                 if (games.getGameLobby().getPlayers().size() >= games.getMinPlayers()) {
                     Main.getInstance().getLobbyManager().startLobby(games);
@@ -120,6 +123,8 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
             if(args[0].equalsIgnoreCase("leave")) {
                 Main.getInstance().getGameManager().getGames().get(0).removePlayer((Player) sender);
                 Main.getInstance().getGameManager().getGames().get(0).getGameLobby().removePlayer((Player) sender);
+                ((Player) sender).getInventory().clear();
+                ((Player) sender).getInventory().setContents(Main.getInstance().getGameManager().getGames().get(0).getOldItems().get(sender));
                 if(Main.getInstance().isCloudNet()) {
                     Main.getInstance().connectToCloudLobbyServer((Player) sender);
                 } else if(!Main.getInstance().isBungeecord()) {

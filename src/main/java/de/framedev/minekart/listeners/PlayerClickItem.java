@@ -1,9 +1,7 @@
 package de.framedev.minekart.listeners;
 
 import de.framedev.minekart.main.Main;
-import de.framedev.minekart.managers.Game;
-import de.framedev.minekart.managers.GameManager;
-import de.framedev.minekart.managers.SpecialItem;
+import de.framedev.minekart.managers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -66,6 +64,40 @@ public class PlayerClickItem implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        if(plugin.getLobbyManager().getLobbies() != null) {
+            if(!plugin.getLobbyManager().getLobbies().isEmpty()) {
+                if (plugin.getLobbyManager().getLobbies().get(0) != null) {
+                    if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                        if (event.getItem() != null) {
+                            ItemStack item = event.getItem();
+                            if(item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                                if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§aQuickStart")) {
+                                    event.setCancelled(true);
+                                    if(plugin.getLobbyManager().getLobbies().get(0).getPlayers().contains(event.getPlayer())) {
+                                        Game games = plugin.getGameManager().getGames().get(0);
+                                        Main.getInstance().getLobbyManager().startLobby(plugin.getGameManager().getGames().get(0));
+                                        event.getPlayer().teleport(new LocationsManager(games.getCupName() + ".lobby").getLocation());
+                                    }
+                                } else if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§cLeave")) {
+                                    Player sender = event.getPlayer();
+                                    event.getPlayer().getInventory().clear();
+                                    sender.getInventory().setContents(plugin.getGameManager().getGames().get(0).getOldItems().get(event.getPlayer()));
+                                    Main.getInstance().getGameManager().getGames().get(0).removePlayer((Player) sender);
+                                    Main.getInstance().getGameManager().getGames().get(0).getGameLobby().removePlayer((Player) sender);
+                                    if(Main.getInstance().isCloudNet()) {
+                                        Main.getInstance().connectToCloudLobbyServer((Player) sender);
+                                    } else if(!Main.getInstance().isBungeecord()) {
+                                        ((Player) sender).teleport(new LocationsManager(Main.getInstance().getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation());
+                                    } else {
+                                        new ServerSwitcher().connect((Player) sender,Main.getInstance().getLobbyServer());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if (plugin.getGameManager().getGames() != null) {
             if (plugin.getGameManager().getGamePlayers() != null) {
                 if (plugin.getGameManager().getGamePlayers().containsKey(event.getPlayer())) {
@@ -76,15 +108,28 @@ public class PlayerClickItem implements Listener {
                                 if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
                                     if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§cReset")) {
                                         event.setCancelled(true);
-                                        if(!PlayerMoveEffects.checkPoints.isEmpty() && PlayerMoveEffects.checkPoints.containsKey(event.getPlayer())) {
+                                        if (!PlayerMoveEffects.checkPoints.isEmpty() && PlayerMoveEffects.checkPoints.containsKey(event.getPlayer())) {
                                             Game game = plugin.getGameManager().getGames().get(0);
-                                            plugin.getGameManager().spawnPig(PlayerMoveEffects.checkPoints.get(event.getPlayer()), game,event.getPlayer());
+                                            plugin.getGameManager().spawnPig(PlayerMoveEffects.checkPoints.get(event.getPlayer()), game, event.getPlayer());
                                         }
                                         if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
                                             Game game = plugin.getGameManager().getGames().get(0);
                                             plugin.getGameManager().getGames().get(0).getPigs().remove(event.getPlayer().getPlayer());
                                             Location location = plugin.getGameManager().getPigSpawnLocation(game, 1, game.getActiveWorld());
-                                            plugin.getGameManager().spawnPig(location, game,event.getPlayer().getPlayer());
+                                            plugin.getGameManager().spawnPig(location, game, event.getPlayer().getPlayer());
+                                        }
+                                    } else if(item.getItemMeta().getDisplayName().equalsIgnoreCase("§cLeave")) {
+                                        Player sender = event.getPlayer();
+                                        event.getPlayer().getInventory().clear();
+                                        sender.getInventory().setContents(plugin.getGameManager().getGames().get(0).getOldItems().get(event.getPlayer()));
+                                        Main.getInstance().getGameManager().getGames().get(0).removePlayer((Player) sender);
+                                        Main.getInstance().getGameManager().getGames().get(0).getGameLobby().removePlayer((Player) sender);
+                                        if(Main.getInstance().isCloudNet()) {
+                                            Main.getInstance().connectToCloudLobbyServer((Player) sender);
+                                        } else if(!Main.getInstance().isBungeecord()) {
+                                            ((Player) sender).teleport(new LocationsManager(Main.getInstance().getGameManager().getGames().get(0).getCupName() + ".lobby").getLocation());
+                                        } else {
+                                            new ServerSwitcher().connect((Player) sender,Main.getInstance().getLobbyServer());
                                         }
                                     }
                                     for (SpecialItem specialItem : plugin.getSpecialItems()) {
