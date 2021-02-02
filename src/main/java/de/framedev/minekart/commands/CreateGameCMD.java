@@ -56,7 +56,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                     }
                 }
                 if (args[0].equalsIgnoreCase("addmap")) {
-                    if(sender.hasPermission("minekart.admin.addmap")) {
+                    if (sender.hasPermission("minekart.admin.addmap")) {
                         Game games = Main.getInstance().getGameManager().getGames().get(0);
                         if (Main.getInstance().getGameManager().addMap(games, ((Player) sender).getWorld())) {
                             sender.sendMessage("§aZum Game §6" + games.getCupName() + " §awurde die Karte §6" + ((Player) sender).getWorld().getName() + " §ahinzugefügt!");
@@ -68,7 +68,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                     }
                 }
                 if (args[0].equalsIgnoreCase("quickstart")) {
-                    if(sender.hasPermission("minekart.quickstart")) {
+                    if (sender.hasPermission("minekart.quickstart")) {
                         Game games = Main.getInstance().getGameManager().getGames().get(0);
                         Main.getInstance().getLobbyManager().getLobbies().get(0).addPlayer((Player) sender);
                         Main.getInstance().getLobbyManager().startLobby(games);
@@ -86,7 +86,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 }
                 if (args[0].equalsIgnoreCase("setlobby")) {
                     Player player = (Player) sender;
-                    if(player.hasPermission("minekart.admin.setlobby")) {
+                    if (player.hasPermission("minekart.admin.setlobby")) {
                         Game games = Main.getInstance().getGameManager().getGames().get(0);
                         new LocationsManager(games.getCupName() + ".lobby").setLocation(player.getLocation());
                         player.sendMessage(Main.getInstance().getPrefix() + "§aLobby Spawn wurde gesetzt§c!");
@@ -111,7 +111,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 }
             } else if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("setcart")) {
-                    if(sender.hasPermission("minekart.admin.setcart")) {
+                    if (sender.hasPermission("minekart.admin.setcart")) {
                         Game games = Main.getInstance().getGameManager().getGames().get(0);
                         if (Main.getInstance().getGameManager().setPigSpawnLocation(games, ((Player) sender).getLocation(), Integer.parseInt(args[2]))) {
                             sender.sendMessage(Main.getInstance().getPrefix() + "§aLocation pig §6" + args[2] + " §awurde gesetzt für den Cup §6" + games.getCupName() + "§c!");
@@ -123,7 +123,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                     }
                 }
                 if (args[0].equalsIgnoreCase("checkpoint")) {
-                    if(sender.hasPermission("minekart.admin.checkpoint")) {
+                    if (sender.hasPermission("minekart.admin.checkpoint")) {
                         Game game = Main.getInstance().getGameManager().getGames().get(0);
                         if (Main.getInstance().getGameManager().createCheckPoint(((Player) sender).getWorld(), game, ((Player) sender).getLocation(), Integer.parseInt(args[1]))) {
                             sender.sendMessage(Main.getInstance().getPrefix() + "§aCheckpoint wurde gesetzt Nummer §6" + Integer.parseInt(args[1]) + " §ain der Welt §6" + ((Player) sender).getWorld().getName() + "§4§l!");
@@ -136,7 +136,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 }
             } else if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("marker")) {
-                    if(sender.hasPermission("minekart.admin.marker")) {
+                    if (sender.hasPermission("minekart.admin.marker")) {
                         PlayerClickItem.commands.put((Player) sender, "game");
                         ((Player) sender).getInventory().addItem(new SpecialItem(Material.STICK).setDisplayName("§6PositionMarker").build());
                         sender.sendMessage(Main.getInstance().getPrefix() + "§aBitte gib den Cup Name ein!");
@@ -146,7 +146,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 }
                 if (args[0].equalsIgnoreCase("hologram")) {
                     Player player = (Player) sender;
-                    if(player.hasPermission("minekart.admin.hologram")) {
+                    if (player.hasPermission("minekart.admin.hologram")) {
                         Location location = player.getLocation();
                         new LocationsManager("hologram").setLocation(location);
                         player.sendMessage(Main.getInstance().getPrefix() + "§aHologram Location gesetzt!");
@@ -170,7 +170,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                 }
             } else if (args.length == 4) {
                 if (args[0].equalsIgnoreCase("renamemap")) {
-                    if(sender.hasPermission("minekart.admin.renamemap")) {
+                    if (sender.hasPermission("minekart.admin.renamemap")) {
                         Game games = Main.getInstance().getGameManager().getGames().get(0);
                         String worldName = args[3];
                         World world = Bukkit.getWorld(args[2]);
@@ -202,7 +202,7 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if(!commands.isEmpty()) {
+        if (!commands.isEmpty()) {
             if (commands.containsKey(event.getPlayer())) {
                 if (commands.get(event.getPlayer()).equalsIgnoreCase("maxplayers")) {
                     try {
@@ -234,16 +234,24 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
         if (args.length == 1) {
             ArrayList<String> commands = new ArrayList<>();
             ArrayList<String> empty = new ArrayList<>();
-            commands.add("create");
-            commands.add("addmap");
-            commands.add("quickstart");
-            commands.add("setlobby");
+            if (sender.hasPermission("minekart.admin.create"))
+                commands.add("create");
+            if (sender.hasPermission("minekart.admin.addmap"))
+                commands.add("addmap");
+            if (sender.hasPermission("minekart.quickstart"))
+                commands.add("quickstart");
+            if (sender.hasPermission("minekart.admin.setlobby"))
+                commands.add("setlobby");
             commands.add("join");
-            commands.add("setcart");
-            commands.add("marker");
-            commands.add("hologram");
+            if (sender.hasPermission("minekart.admin.setcart"))
+                commands.add("setcart");
+            if (sender.hasPermission("minekart.admin.marker"))
+                commands.add("marker");
+            if (sender.hasPermission("minekart.admin.hologram"))
+                commands.add("hologram");
             commands.add("leave");
-            commands.add("renamemap");
+            if (sender.hasPermission("minekart.admin.renamemap"))
+                commands.add("renamemap");
             for (String s : commands) {
                 if (s.toLowerCase().startsWith(args[0])) {
                     empty.add(s);
