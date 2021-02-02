@@ -31,6 +31,8 @@ public class GameJoin implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (plugin.getConfig().getBoolean("BungeeCord") || plugin.isCloudNet()) {
+            if(plugin.getGameManager().isStarted())
+                event.getPlayer().kickPlayer("§cGame Gestartet");
             plugin.getLobbyManager().getLobbies().get(0).addPlayer(event.getPlayer());
             if(player.hasPermission("minekart.quickstart")) {
                 player.getInventory().setItem(0,plugin.getInventory().getItem(0));

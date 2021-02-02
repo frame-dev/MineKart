@@ -1,11 +1,9 @@
 package de.framedev.minekart.listeners;
 
-import de.dytanic.cloudnet.api.CloudAPI;
-import de.dytanic.cloudnet.bridge.CloudProxy;
-import de.dytanic.cloudnet.bridge.CloudServer;
-import de.dytanic.cloudnet.lib.player.CloudPlayer;
-import de.dytanic.cloudnet.lib.server.ServerState;
-import de.dytanic.cloudnetcore.CloudNet;
+import de.dytanic.cloudnet.driver.CloudNetDriver;
+import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
+import de.dytanic.cloudnet.ext.signs.node.CloudNetSignsModule;
+import de.dytanic.cloudnet.service.ICloudService;
 import de.framedev.minekart.main.Main;
 import de.framedev.minekart.managers.Game;
 import de.framedev.minekart.managers.SpecialItem;
@@ -83,8 +81,7 @@ public class GameStartedListener implements Listener {
                             players.getInventory().setItem(0,new SpecialItem(Material.BONE).setDisplayName("§cReset").build());
                         });
                         if(Main.getInstance().isCloudNet()) {
-                            CloudServer server = CloudServer.getInstance();
-                            server.setServerState(ServerState.INGAME);
+                            IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
                         }
                         cancel();
                     } else {

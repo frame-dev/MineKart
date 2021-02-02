@@ -7,18 +7,10 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import de.dytanic.cloudnet.api.CloudAPI;
-import de.dytanic.cloudnet.bridge.CloudProxy;
-import de.dytanic.cloudnet.bridge.CloudServer;
-import de.dytanic.cloudnet.lib.CloudNetwork;
-import de.dytanic.cloudnet.lib.player.CloudPlayer;
-import de.dytanic.cloudnet.lib.server.ServerGroup;
-import de.dytanic.cloudnet.lib.server.ServerState;
-import de.dytanic.cloudnet.lib.server.info.ServerInfo;
-import de.dytanic.cloudnetcore.CloudNet;
+import de.dytanic.cloudnet.driver.CloudNetDriver;
+import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
 import de.framedev.minekart.api.MineKartAPI;
 import de.framedev.minekart.managers.*;
-import de.framedev.mysqlapi.managers.Ser;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,7 +21,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -204,24 +195,16 @@ public class Main extends JavaPlugin {
         }
 
         new MineKartAPI();
-        if(isCloudNet()) {
-            CloudServer.getInstance().setServerState(ServerState.LOBBY);
-        }
         getLogger().log(Level.WARNING, "This Plugin is Work in Progress");
     }
 
     public InventoryManager getInventory() {
         return inventory;
     }
-
     public void connectToCloudLobbyServer(Player player) {
         if(isCloudNet()) {
-            Collection<ServerInfo> serverGroup = CloudAPI.getInstance().getServers(lobbyGroup);
-            CloudPlayer cloudPlayer = CloudAPI.getInstance().getOnlinePlayer(player.getUniqueId());
-            for (ServerInfo info : serverGroup) {
-                cloudPlayer.getPlayerExecutor().sendPlayer(cloudPlayer, String.valueOf(info));
-                return;
-            }
+            IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+            playerManager.getPlayerExecutor(playerManager.getOnlinePlayer(player.getUniqueId())).connect(lobbyGroup + "-1");
         }
     }
 
@@ -418,8 +401,6 @@ public class Main extends JavaPlugin {
         if(!getGameManager().getGames().get(0).getPigs().isEmpty()) {
             getGameManager().getGames().get(0).getPigs().forEach((player, minecart) -> minecart.remove());
         }
-        if(isCloudNet())
-            CloudServer.getInstance().setServerState(ServerState.OFFLINE);
         Bukkit.getConsoleSender().sendMessage(getPrefix() + "§cPlugin Disabled!");
     }
 

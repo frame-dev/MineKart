@@ -46,10 +46,17 @@ public class MineKartAPI {
     }
 
     public boolean isPlayerInGame(Player player) {
+        if(plugin.getGameManager().getGames().isEmpty())
+            return false;
         return plugin.getGameManager().getGames().get(0).getPlayers().contains(player);
     }
 
+    public boolean isGameStarted() {
+        return plugin.getGameManager().isStarted();
+    }
     public boolean isPlayerInLobby(Player player) {
+        if(plugin.getLobbyManager().getLobbies().isEmpty())
+            return false;
         return plugin.getLobbyManager().getLobbies().get(0).getPlayers().contains(player);
     }
 

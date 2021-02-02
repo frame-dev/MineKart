@@ -7,9 +7,9 @@ DatabaseName: 'minekart_playerstats'
 BungeeCord: false
 BungeeCordLobby: Lobby-1
 
-CloudNet: false
+# CloudNet: false
 
-CloudNetLobbyGroup: Lobby
+# CloudNetLobbyGroup: Lobby
 
 # Default is lobby
 

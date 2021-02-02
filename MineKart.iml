@@ -124,7 +124,28 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard.worldguard-libs:core:7.0.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.flywaydb:flyway-core:3.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q:commandbook:2.3" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-api-bridge:2.1.16" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-core:2.1.16" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: jline:jline:2.14.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.fusesource.jansi:jansi:1.17.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.h2database:h2:1.4.197" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-driver:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-common:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-handler:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-common:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-buffer:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-resolver:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-codec:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-codec-http:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport-native-epoll:linux-x86_64:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport-native-unix-common:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport-native-kqueue:osx-x86_64:4.1.36.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-wrapper-jvm:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-bridge:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-syncproxy:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-signs:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: de.dytanic.cloudnet:cloudnet-npcs:3.3.0-RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.juliarn:npc-lib:2.3-RELEASE" level="project" />
   </component>
 </module>

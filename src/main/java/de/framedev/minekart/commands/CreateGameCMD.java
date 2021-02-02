@@ -159,7 +159,10 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                     Main.getInstance().getGameManager().getGames().get(0).removePlayer((Player) sender);
                     Main.getInstance().getGameManager().getGames().get(0).getGameLobby().removePlayer((Player) sender);
                     ((Player) sender).getInventory().clear();
-                    ((Player) sender).getInventory().setContents(Main.getInstance().getGameManager().getGames().get(0).getOldItems().get(sender));
+                    if (!plugin.getGameManager().getGames().get(0).getOldItems().isEmpty()) {
+                        if (plugin.getGameManager().getGames().get(0).getOldItems().containsKey((Player) sender))
+                            ((Player) sender).getInventory().setContents(Main.getInstance().getGameManager().getGames().get(0).getOldItems().get(sender));
+                    }
                     if (Main.getInstance().isCloudNet()) {
                         Main.getInstance().connectToCloudLobbyServer((Player) sender);
                     } else if (!Main.getInstance().isBungeecord()) {
@@ -224,6 +227,22 @@ public class CreateGameCMD implements CommandExecutor, Listener, TabCompleter {
                     event.setCancelled(true);
                     event.getPlayer().sendMessage("§aSpiel wurde erstellt! Mit dem Namen §6" + game.getCupName());
                     game.saveGame(game.getCupName());
+                }
+            }
+        }
+        if (!plugin.getGameManager().getGames().isEmpty()) {
+            if (!plugin.getGameManager().isStarted()) {
+                if(plugin.getLobbyManager().getLobbies().get(0).getPlayers().contains(event.getPlayer())) {
+                    plugin.getLobbyManager().getLobbies().get(0).sendMessageToLobby("§6" + event.getPlayer().getName() + " §a" +
+                            event.getMessage());
+                    event.setCancelled(true);
+                }
+            } else {
+                Game game = plugin.getGameManager().getGames().get(0);
+                if(game.getPlayers().contains(event.getPlayer())) {
+                    String message = event.getMessage();
+                    game.sendMessageToGame("§6" + event.getPlayer().getName() + " §a" + message);
+                    event.setCancelled(true);
                 }
             }
         }

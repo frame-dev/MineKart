@@ -73,10 +73,13 @@ public class PlayerMoveEffects implements Listener {
                 Game game = plugin.getGameManager().getGames().get(0);
                 if (plugin.getGameManager().getGames().get(0).getPlayers().contains(player)) {
                     if (event.getPlayer().getLocation().subtract(0, 0.5, 0).getBlock().getType() == Material.BARRIER) {
-                        for (Location location : plugin.getGameManager().getCheckPoints(event.getPlayer().getWorld(), plugin.getGameManager().getGames().get(0))) {
-                            if (event.getPlayer().getLocation().distance(location) <= 20) {
-                                event.getPlayer().teleport(location);
-                            }
+                        if (!checkPoints.isEmpty() && checkPoints.containsKey(event.getPlayer())) {
+                            plugin.getGameManager().spawnPig(checkPoints.get(event.getPlayer()), game, event.getPlayer());
+                        }
+                        if (plugin.getGameManager().getGames().get(0).getPlayers().contains(event.getPlayer())) {
+                            plugin.getGameManager().getGames().get(0).getPigs().remove(event.getPlayer());
+                            Location location = plugin.getGameManager().getPigSpawnLocation(game, 1, game.getActiveWorld());
+                            plugin.getGameManager().spawnPig(location, game, event.getPlayer());
                         }
                     }
                     if (plugin.getConfig().contains("ItemBlock")) {
