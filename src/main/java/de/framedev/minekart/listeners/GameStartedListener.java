@@ -5,6 +5,7 @@ import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
 import de.dytanic.cloudnet.ext.signs.node.CloudNetSignsModule;
 import de.dytanic.cloudnet.service.ICloudService;
 import de.framedev.minekart.main.Main;
+import de.framedev.minekart.managers.CloudNetManager;
 import de.framedev.minekart.managers.Game;
 import de.framedev.minekart.managers.SpecialItem;
 import org.bukkit.Material;
@@ -81,7 +82,7 @@ public class GameStartedListener implements Listener {
                             players.getInventory().setItem(0,new SpecialItem(Material.BONE).setDisplayName("§cReset").build());
                         });
                         if(Main.getInstance().isCloudNet()) {
-                            IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+                            new CloudNetManager().changeToIngame();
                         }
                         cancel();
                     } else {

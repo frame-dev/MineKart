@@ -195,6 +195,10 @@ public class Main extends JavaPlugin {
         }
 
         new MineKartAPI();
+
+        //TODO CloudNet Importieren 03.02.2021
+        if(isCloudNet())
+            new CloudNetManager().changeToInLobby();
         getLogger().log(Level.WARNING, "This Plugin is Work in Progress");
     }
 
